@@ -2,11 +2,11 @@
 // TODO: Replace with proper auth system for production
 
 export const ADMIN_CREDENTIALS = {
-  username: 'admin',
-  password: 'admin123' // TODO: Use environment variables
+  username: process.env.ADMIN_USERNAME || 'admin',
+  password: process.env.ADMIN_PASSWORD || 'admin123'
 };
 
-export const validateAdminCredentials = (username: string, password: string): boolean => {
+export const validateAdminCredentials = (username: string, password: string): boolean => { 
   return username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password;
 };
 
