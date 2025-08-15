@@ -3,13 +3,7 @@
 import { useState } from 'react';
 import { useImageSearch } from '@/lib/hooks/useImageSearch';
 import ImageSection from './ImageSection';
-import { lessonService, type Lesson } from '@/lib/services/lessonService';
-
-interface VocabularyRow {
-  id: string;
-  searchTerm: string;
-  pictures: string[];
-}
+import { lessonService, type Lesson, type VocabularyRow } from '@/lib/services/lessonService';
 
 interface LessonFormProps {
   username: string;
