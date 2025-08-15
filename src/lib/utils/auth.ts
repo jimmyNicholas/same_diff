@@ -2,8 +2,8 @@
 // TODO: Replace with proper auth system for production
 
 export const ADMIN_CREDENTIALS = {
-  username: process.env.ADMIN_USERNAME || 'admin',
-  password: process.env.ADMIN_PASSWORD || 'admin123'
+  username: process.env.NEXT_PUBLIC_ADMIN_USERNAME,
+  password: process.env.NEXT_PUBLIC_ADMIN_PASSWORD
 };
 
 export const validateAdminCredentials = (username: string, password: string): boolean => { 

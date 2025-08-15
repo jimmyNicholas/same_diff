@@ -42,3 +42,5 @@ next-env.d.ts
 
 # docs
 OVERVIEW.md
+plan.md
+SYSTEM_PROMPT.md
