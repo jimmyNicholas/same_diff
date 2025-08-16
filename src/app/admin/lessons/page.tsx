@@ -96,7 +96,6 @@ export default function AdminLessons() {
   if (showLessonForm) {
     return (
       <LessonForm
-        username={username}
         onCancel={handleCancelLesson}
         onSave={handleSaveLesson}
       />

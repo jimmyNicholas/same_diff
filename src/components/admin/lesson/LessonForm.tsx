@@ -18,38 +18,53 @@ import {
 import { ChevronDown } from "lucide-react";
 
 interface LessonFormProps {
-  username: string;
   onCancel: () => void;
   onSave: (lesson: Lesson) => void;
+  initialData?: Lesson;
+  isEditing?: boolean;
 }
 
-export default function LessonForm({ username, onCancel, onSave }: LessonFormProps) {
+export default function LessonForm({ onCancel, onSave, initialData, isEditing = false }: LessonFormProps) {
   const [lessonData, setLessonData] = useState({
-    level: '',
-    topic: '',
-    vocabularyText: ''
+    level: initialData?.level || '',
+    topic: initialData?.topic || '',
+    vocabularyText: initialData?.vocabularyRows?.map(row => row.searchTerm).join(', ') || ''
   });
-  
 
   const handleSaveLesson = () => {
     if (!lessonData.level || !lessonData.topic) {
-      alert('Please fill in all required fields and add vocabulary terms');
+      alert('Please fill in all required fields');
       return;
     }
 
     try {
-      const savedLesson = lessonService.saveLesson({
-        level: lessonData.level,
-        topic: lessonData.topic,
-        vocabularyRows: lessonData.vocabularyText.split(',').map(term => ({
-          id: `row-${Date.now()}`,
-          searchTerm: term.trim(),
-          pictures: []
-        }))
-      });
-
-      console.log('Lesson saved successfully:', savedLesson);
-      onSave(savedLesson);
+      if (isEditing && initialData) {
+        // Update existing lesson
+        const updatedLesson: Lesson = {
+          ...initialData,
+          level: lessonData.level,
+          topic: lessonData.topic,
+          vocabularyRows: lessonData.vocabularyText.split(',').map(term => ({
+            id: `row-${Date.now()}`,
+            searchTerm: term.trim(),
+            pictures: []
+          })).filter(row => row.searchTerm),
+          updatedAt: new Date().toISOString()
+        };
+        onSave(updatedLesson);
+      } else {
+        // Create new lesson
+        const newLesson = lessonService.saveLesson({
+          level: lessonData.level,
+          topic: lessonData.topic,
+          vocabularyRows: lessonData.vocabularyText.split(',').map(term => ({
+            id: `row-${Date.now()}`,
+            searchTerm: term.trim(),
+            pictures: []
+          })).filter(row => row.searchTerm)
+        });
+        onSave(newLesson);
+      }
     } catch (error) {
       console.error('Failed to save lesson:', error);
       alert('Failed to save lesson. Please try again.');
@@ -77,6 +92,19 @@ export default function LessonForm({ username, onCancel, onSave }: LessonFormPro
     <div className="min-h-screen bg-gray-50">      
       <div className="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <Card className="p-6 space-y-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-900">
+              {isEditing ? 'Edit Lesson' : 'Create New Lesson'}
+            </h1>
+            <Button
+              variant="ghost"
+              onClick={onCancel}
+              className="text-gray-600 hover:text-gray-800"
+            >
+              ← Cancel
+            </Button>
+          </div>
+
           {/* Basic Lesson Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -150,7 +178,7 @@ export default function LessonForm({ username, onCancel, onSave }: LessonFormPro
               disabled={!canSave}
               className="px-6 py-2"
             >
-              Save Lesson
+              {isEditing ? 'Update Lesson' : 'Save Lesson'}
             </Button>
           </div>
         </Card>
