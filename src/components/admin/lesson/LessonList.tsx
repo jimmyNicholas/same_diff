@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import LessonForm from "./LessonForm";
+import LessonCard from "./LessonCard";
 
 interface LessonListProps {
   onSelectLesson: (lesson: Lesson) => void;
@@ -159,7 +160,8 @@ export default function LessonList({
 
       {/* Lesson Count */}
       <div className="text-sm text-gray-600">
-        {filteredLessons.length} lesson{filteredLessons.length !== 1 ? 's' : ''} found
+        {filteredLessons.length} lesson{filteredLessons.length !== 1 ? "s" : ""}{" "}
+        found
       </div>
 
       {/* Lessons Grid */}
@@ -170,62 +172,13 @@ export default function LessonList({
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {filteredLessons.map((lesson) => (
-            <Card key={lesson.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="text-base font-semibold text-gray-900 truncate" title={lesson.topic}>
-                      {lesson.topic}
-                    </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {getLevelDisplayName(lesson.level)}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 ml-2">
-                    {onEditLesson && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(lesson)}
-                        className="text-blue-600 hover:text-blue-800 p-0 h-auto"
-                        title="Edit lesson"
-                      >
-                        Edit
-                      </Button>
-                    )}
-                    {onDeleteLesson && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(lesson.id)}
-                        className="text-red-600 hover:text-red-800 p-0 h-auto"
-                        title="Delete lesson"
-                      >
-                        Delete
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="pt-0">
-                <div className="text-sm text-gray-500 mb-3">
-                  {lesson.vocabularyRows.length} vocabulary term{lesson.vocabularyRows.length !== 1 ? 's' : ''}
-                </div>
-                
-                <div className="text-xs text-gray-400 mb-3">
-                  Created: {new Date(lesson.createdAt).toLocaleDateString()}
-                </div>
-                
-                <Button
-                  onClick={() => onSelectLesson(lesson)}
-                  className="w-full"
-                  size="sm"
-                >
-                  Create Activity
-                </Button>
-              </CardContent>
-            </Card>
+            <LessonCard
+              key={lesson.id}
+              lesson={lesson}
+              onSelectLesson={onSelectLesson}
+              onEditLesson={handleEdit}
+              onDeleteLesson={handleDelete}
+            />
           ))}
         </div>
       )}

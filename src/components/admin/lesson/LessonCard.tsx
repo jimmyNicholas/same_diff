@@ -16,7 +16,7 @@ const LessonCard = ({
   onEditLesson,
   onDeleteLesson,
 }: LessonCardProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+
   const getLevelDisplayName = (level: string) => {
     switch (level) {
       case "ele":
@@ -77,8 +77,8 @@ const LessonCard = ({
 
       <CardContent className="pt-0">
         <div className="text-sm text-gray-500 mb-3">
-          {lesson.vocabularyRows.length} vocabulary term
-          {lesson.vocabularyRows.length !== 1 ? "s" : ""}
+            {"Vocabulary: "}
+            {lesson.vocabulary.length > 0 ? lesson.vocabulary.map((word) => word.searchTerm).join(", ") : "No vocabulary terms"}
         </div>
 
         <div className="text-xs text-gray-400 mb-3">

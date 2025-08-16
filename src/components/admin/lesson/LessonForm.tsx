@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useImageSearch } from '@/lib/hooks/useImageSearch';
 import ImageSection from '../ImageSection';
-import { lessonService, type Lesson, type VocabularyRow } from '@/lib/services/lessonService';
+import { lessonService, type Lesson, type Vocabulary } from '@/lib/services/lessonService';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,7 +28,7 @@ export default function LessonForm({ onCancel, onSave, initialData, isEditing = 
   const [lessonData, setLessonData] = useState({
     level: initialData?.level || '',
     topic: initialData?.topic || '',
-    vocabularyText: initialData?.vocabularyRows?.map(row => row.searchTerm).join(', ') || ''
+    vocabularyText: initialData?.vocabulary?.map(word => word.searchTerm).join(', ') || ''
   });
 
   const handleSaveLesson = () => {
@@ -44,7 +44,7 @@ export default function LessonForm({ onCancel, onSave, initialData, isEditing = 
           ...initialData,
           level: lessonData.level,
           topic: lessonData.topic,
-          vocabularyRows: lessonData.vocabularyText.split(',').map(term => ({
+          vocabulary: lessonData.vocabularyText.split(',').map(term => ({
             id: `row-${Date.now()}`,
             searchTerm: term.trim(),
             pictures: []
@@ -57,7 +57,7 @@ export default function LessonForm({ onCancel, onSave, initialData, isEditing = 
         const newLesson = lessonService.saveLesson({
           level: lessonData.level,
           topic: lessonData.topic,
-          vocabularyRows: lessonData.vocabularyText.split(',').map(term => ({
+          vocabulary: lessonData.vocabularyText.split(',').map(term => ({
             id: `row-${Date.now()}`,
             searchTerm: term.trim(),
             pictures: []
