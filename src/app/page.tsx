@@ -1,28 +1,34 @@
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
-        <h1 className="text-4xl font-bold text-center mb-8">
-          ELICOS Game Generator
-        </h1>
-        
-        <div className="flex flex-col space-y-4 items-center">
-          <Link 
-            href="/admin"
-            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Admin Panel
-          </Link>
-          
-          <Link 
-            href="/play"
-            className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-          >
-            Play Game
-          </Link>
-        </div>
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader className="text-center">
+            <CardTitle className="text-4xl font-bold">
+              ELICOS Game Generator
+            </CardTitle>
+            <CardDescription>
+              Create and play educational games
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col space-y-4">
+            <Link href="/login/admin">
+              <Button className="w-full" size="lg">
+                Admin Panel
+              </Button>
+            </Link>
+            
+            <Link href="/play">
+              <Button variant="secondary" className="w-full" size="lg">
+                Play Game
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );
