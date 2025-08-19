@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useApp } from "@/lib/providers/app-context";
 import { validateAdminCredentials, createSession } from "@/lib/utils/auth";
 
 const AdminLogin = () => {
@@ -9,13 +10,15 @@ const AdminLogin = () => {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const router = useRouter();
-
+  const { dispatch } = useApp();
+  
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateAdminCredentials(username, password)) {
       const session = createSession();
       localStorage.setItem("adminSession", session);
+      dispatch({ type: 'SET_AUTH', payload: { isAuthenticated: true, isAdmin: true, username: username } });
       router.push("/admin/dashboard");
     } else {
       setError("Invalid credentials");

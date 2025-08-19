@@ -3,6 +3,9 @@
 import Menu from "@/components/ui/menu";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { useUI } from "@/lib/providers/app-context";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Item {
     label: string;
@@ -32,6 +35,7 @@ const configItems: Item[] = [
 const SideBar = () => {
     const router = useRouter();
     const pathname = usePathname();
+    const { sidebarCollapsed, toggleSidebar } = useUI();
 
     const items = useMemo(() => 
         configItems.map(item => ({
@@ -45,8 +49,32 @@ const SideBar = () => {
     };
 
   return (
-    <div className="flex flex-col h-screen border w-32 py-2 items-center">
-      <Menu items={items} onClick={handleClick} />
+    <div className={`group relative flex flex-col h-screen border-r bg-background transition-all duration-300 ease-in-out ${
+      sidebarCollapsed ? 'w-8' : 'w-32'
+    }`}>
+      {/* Toggle Button */}
+      
+      <div className="absolute -right-3 top-1/3">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={toggleSidebar}
+          className="h-6 w-6 rounded-full p-0 shadow-md hover:shadow-lg transition-all duration-200"
+        >
+          {sidebarCollapsed ? (
+            <ChevronRight className="h-3 w-3" />
+          ) : (
+            <ChevronLeft className="h-3 w-3" />
+          )}
+        </Button>
+      </div>
+      
+      {/* Sidebar Content */}
+      {!sidebarCollapsed && (  
+      <div className="flex-1 py-4 px-2">
+        <Menu items={items} onClick={handleClick} />
+      </div>
+      )}
     </div>
   );
 };
