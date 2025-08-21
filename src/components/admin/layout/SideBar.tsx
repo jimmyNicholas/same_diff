@@ -2,8 +2,7 @@
 
 import Menu from "@/components/ui/menu";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo } from "react";
-import { useUI } from "@/lib/providers/app-context";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -35,7 +34,7 @@ const configItems: Item[] = [
 const SideBar = () => {
     const router = useRouter();
     const pathname = usePathname();
-    const { sidebarCollapsed, toggleSidebar } = useUI();
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     const items = useMemo(() => 
         configItems.map(item => ({
@@ -46,6 +45,10 @@ const SideBar = () => {
 
     const handleClick = (href: string) => {
         router.push(href);
+    };
+
+    const toggleSidebar = () => {
+        setSidebarCollapsed(!sidebarCollapsed);
     };
 
   return (

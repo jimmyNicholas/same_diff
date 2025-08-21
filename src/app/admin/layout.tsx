@@ -2,14 +2,12 @@
 
 import Header from "@/components/admin/layout/Header";
 import SideBar from "@/components/admin/layout/SideBar";
-import { useUI } from "@/lib/providers/app-context";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => { 
-  const { sidebarCollapsed } = useUI();
 
   return (
     <div className="flex flex-col h-screen">
