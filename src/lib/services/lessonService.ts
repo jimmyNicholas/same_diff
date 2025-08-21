@@ -1,4 +1,4 @@
-export interface VocabularyRow {
+export interface Vocabulary {
   id: string;
   searchTerm: string;
   pictures: string[];
@@ -8,7 +8,7 @@ export interface Lesson {
   id: string;
   level: string;
   topic: string;
-  vocabularyRows: VocabularyRow[];
+  vocabulary: Vocabulary[];
   createdAt: string;
   updatedAt: string;
 }
