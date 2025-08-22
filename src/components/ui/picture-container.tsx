@@ -10,6 +10,8 @@ const PictureContainer = ({ pictures }: PictureContainerProps) => {
     const sortedPictures = pictures.sort((a, b) => {
         if (a.enabled && !b.enabled) return -1;
         if (!a.enabled && b.enabled) return 1;
+        if (a.loading && !b.loading) return -1;
+        if (!a.loading && b.loading) return 1;
         return 0;
     });
 

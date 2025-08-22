@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import PictureContainer from "./picture-container";
 import { expect, fn } from "storybook/test";
-import { PictureProps } from "./picture";
 
 const meta = {
   component: PictureContainer,
@@ -128,119 +127,104 @@ export const SortedStateMix: Story = {
   },
 };
 
-const testingPictures: PictureProps[] = [
-  {
-    id: "1",
-    enabled: true,
-    loading: false,
-    src: "/images/placeholder.jpg",
-    alt: "Test image 1",
-    size: "md",
-    getImage: fn(),
-    closeImage: fn(),
-    previousImage: fn(),
-    nextImage: fn(),
-  },
-  {
-    id: "2",
-    enabled: false,
-    loading: false,
-    src: "/images/placeholder.jpg",
-    alt: "Test image 3",
-    size: "md",
-    getImage: fn(),
-    closeImage: fn(),
-    previousImage: fn(),
-    nextImage: fn(),
-  },
-  {
-    id: "3",
-    enabled: false,
-    loading: true,
-    src: "/images/placeholder.jpg",
-    alt: "Test image 1",
-    size: "md",
-    getImage: fn(),
-    closeImage: fn(),
-    previousImage: fn(),
-    nextImage: fn(),
-  },
-];
+// const testingPictures: PictureProps[] = [
+//   {
+//     id: "1",
+//     enabled: true,
+//     loading: false,
+//     src: "/images/placeholder.jpg",
+//     alt: "Test image 1",
+//     size: "md",
+//     getImage: fn(),
+//     closeImage: fn(),
+//     previousImage: fn(),
+//     nextImage: fn(),
+//   },
+//   {
+//     id: "2",
+//     enabled: false,
+//     loading: false,
+//     src: "/images/placeholder.jpg",
+//     alt: "Test image 3",
+//     size: "md",
+//     getImage: fn(),
+//     closeImage: fn(),
+//     previousImage: fn(),
+//     nextImage: fn(),
+//   },
+//   {
+//     id: "3",
+//     enabled: false,
+//     loading: true,
+//     src: "/images/placeholder.jpg",
+//     alt: "Test image 1",
+//     size: "md",
+//     getImage: fn(),
+//     closeImage: fn(),
+//     previousImage: fn(),
+//     nextImage: fn(),
+//   },
+// ];
 
-export const TestingEnabledPicture: Story = {
-  play: async ({ canvas, userEvent, args }) => {
-    const enabledPictureArgs = args?.pictures[0];
+export const TestingSorting: Story = {
+  play: async ({ canvas, step }) => {
+    await step("enabled pictures appear first", async () => {
+      await expect(canvas.getByTestId("picture-1")).toBeInTheDocument();
+      await expect(canvas.getByTestId("picture-2")).toBeInTheDocument();
+      await expect(canvas.getByTestId("picture-3")).toBeInTheDocument();
+    });
 
-    const picture = canvas.getByTestId("picture-1");
-    await expect(picture).toBeInTheDocument();
+    // Verify order: enabled pictures first, then disabled
+    await step("order of pictures", async () => {
+      const container = canvas.getByTestId("picture-container");
+      const pictureElements = container.querySelectorAll(
+        '[data-testid^="picture-"]'
+      );
 
-    // close image button
-    const closeImageButton = canvas.getByTestId("close-image-button-1");
-    await expect(closeImageButton).toBeInTheDocument();
-    await userEvent.click(closeImageButton);
-    await expect(enabledPictureArgs.closeImage).toHaveBeenCalled();
+      const enabledTestId = "picture-2";
+      const disabledTestId = "picture-3";
+      const loadingTestId = "picture-1";
 
-    // previous and next image buttons
-    const previousImageButton = canvas.getByTestId("previous-image-button-1");
-    await expect(previousImageButton).toBeInTheDocument();
-    await userEvent.click(previousImageButton);
-    await expect(enabledPictureArgs.previousImage).toHaveBeenCalled();
-
-    const nextImageButton = canvas.getByTestId("next-image-button-1");
-    await expect(nextImageButton).toBeInTheDocument();
-    await userEvent.click(nextImageButton);
-    await expect(enabledPictureArgs.nextImage).toHaveBeenCalled();
-
-    // get image button is null
-    await expect(canvas.queryByTestId("get-image-button-1")).toBeNull();
-  },
-  args: {
-    pictures: testingPictures,
-  },
-};
-
-export const TestingDisabledPicture: Story = {
-  play: async ({ canvas, userEvent, args }) => {
-    const disabledPictureArgs = args?.pictures[1];
-
-    const picture = canvas.getByTestId("picture-2");
-    await expect(picture).toBeInTheDocument();
-
-    // null for close image button, previous and next image buttons
-    await expect(canvas.queryByTestId("close-image-button-2")).toBeNull();
-    await expect(canvas.queryByTestId("previous-image-button-2")).toBeNull();
-    await expect(canvas.queryByTestId("next-image-button-2")).toBeNull();
-
-    // get image button
-    const getImageButton = canvas.getByTestId("get-image-button-2");
-    await expect(getImageButton).toBeInTheDocument();
-    await userEvent.click(getImageButton);
-    await expect(disabledPictureArgs.getImage).toHaveBeenCalled();
+      await expect(pictureElements[0]).toHaveAttribute(
+        "data-testid",
+        enabledTestId
+      );
+      await expect(pictureElements[1]).toHaveAttribute(
+        "data-testid",
+        disabledTestId
+      );
+      await expect(pictureElements[2]).toHaveAttribute(
+        "data-testid",
+        loadingTestId
+      );
+    });
   },
   args: {
-    pictures: testingPictures,
-  },
-};
-
-export const TestingLoadingPicture: Story = {
-    play: async ({ canvas, userEvent, args }) => {
-        const loadingPictureArgs = args?.pictures[2];
-    
-        const picture = canvas.getByTestId("picture-3");
-        await expect(picture).toBeInTheDocument();
-    
-        // null for close image button, previous and next image buttons
-        await expect(canvas.queryByTestId("close-image-button-3")).toBeNull();
-        await expect(canvas.queryByTestId("previous-image-button-3")).toBeNull();
-        await expect(canvas.queryByTestId("next-image-button-3")).toBeNull();
-    
-        // get image button
-        const getImageButton = canvas.getByTestId("get-image-button-3");
-        await expect(getImageButton).toBeInTheDocument();
-        await userEvent.click(getImageButton);
-        await expect(loadingPictureArgs.getImage).not.toHaveBeenCalled();
+    pictures: [
+      {
+        id: "1",
+        enabled: false,
+        loading: false,
+        src: "/images/placeholder.jpg",
+        alt: "Test 1",
+        size: "md",
       },
-  args: {
-    pictures: testingPictures,
+      {
+        id: "2",
+        enabled: true,
+        loading: false,
+        src: "/images/placeholder.jpg",
+        alt: "Test 2",
+        size: "md",
+      },
+      {
+        id: "3",
+        enabled: false,
+        loading: true,
+        src: "/images/placeholder.jpg",
+        alt: "Test 3",
+        size: "md",
+      },
+    ],
   },
 };

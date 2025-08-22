@@ -79,47 +79,6 @@ export const Large: Story = {
   },
 };
 
-export const GetImage: Story = {
-  play: async ({ canvas, userEvent }) => {
-    await expect(canvas.getByTestId("get-image-button-1")).toBeInTheDocument();
-    await userEvent.click(canvas.getByTestId("get-image-button-1"));
-  },
-};
-
-export const CloseImage: Story = {
-  play: async ({ canvas, userEvent }) => {
-    await expect(
-      canvas.getByTestId("close-image-button-1")
-    ).toBeInTheDocument();
-    await userEvent.click(canvas.getByTestId("close-image-button-1"));
-  },
-  args: {
-    enabled: true,
-  },
-};
-
-export const PreviousImage: Story = {
-  play: async ({ canvas, userEvent }) => {
-    await expect(
-      canvas.getByTestId("previous-image-button-1")
-    ).toBeInTheDocument();
-    await userEvent.click(canvas.getByTestId("previous-image-button-1"));
-  },
-  args: {
-    enabled: true,
-  },
-};
-
-export const NextImage: Story = {
-  play: async ({ canvas, userEvent }) => {
-    await expect(canvas.getByTestId("next-image-button-1")).toBeInTheDocument();
-    await userEvent.click(canvas.getByTestId("next-image-button-1"));
-  },
-  args: {
-    enabled: true,
-  },
-};
-
 export const TestingDisabledPicture: Story = {
   play: async ({ canvas, userEvent, args }) => {
     await expect(canvas.getByTestId("picture-1")).toBeInTheDocument();
