@@ -1,11 +1,13 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import Picture from "./picture";
+import { expect } from "storybook/test";
 
 const meta = {
   component: Picture,
   title: "Picture",
   tags: ["autodocs"],
   args: {
+    id: "1",
     enabled: false,
     loading: false,
     src: "/images/placeholder.jpg",
@@ -13,6 +15,9 @@ const meta = {
     size: "md",
   },
   argTypes: {
+    id: {
+      control: "text",
+    },
     enabled: {
       control: "boolean",
     },
@@ -72,4 +77,43 @@ export const Large: Story = {
     alt: "Test image",
     size: "lg",
   },
+};
+
+export const GetImage: Story = {
+    play: async ({ canvas, userEvent }) => {
+        await expect(canvas.getByTestId('get-image-button')).toBeInTheDocument();
+        await userEvent.click(canvas.getByTestId('get-image-button'));
+    }
+};
+
+export const CloseImage: Story = {
+    play: async ({ canvas, userEvent }) => {
+        await expect(canvas.getByTestId('close-image-button')).toBeInTheDocument();
+        await userEvent.click(canvas.getByTestId('close-image-button'));
+    },
+    args: {
+        enabled: true,
+    },
+};
+
+
+export const PreviousImage: Story = {
+    play: async ({ canvas, userEvent }) => {
+        await expect(canvas.getByTestId('previous-image-button')).toBeInTheDocument();
+        await userEvent.click(canvas.getByTestId('previous-image-button'));
+    },
+    args: {
+        enabled: true,
+    },
+};
+
+
+export const NextImage: Story = {
+    play: async ({ canvas, userEvent }) => {
+        await expect(canvas.getByTestId('next-image-button')).toBeInTheDocument();
+        await userEvent.click(canvas.getByTestId('next-image-button'));
+    },
+    args: {
+        enabled: true,
+    },
 };
