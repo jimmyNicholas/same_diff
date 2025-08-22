@@ -127,45 +127,6 @@ export const SortedStateMix: Story = {
   },
 };
 
-// const testingPictures: PictureProps[] = [
-//   {
-//     id: "1",
-//     enabled: true,
-//     loading: false,
-//     src: "/images/placeholder.jpg",
-//     alt: "Test image 1",
-//     size: "md",
-//     getImage: fn(),
-//     closeImage: fn(),
-//     previousImage: fn(),
-//     nextImage: fn(),
-//   },
-//   {
-//     id: "2",
-//     enabled: false,
-//     loading: false,
-//     src: "/images/placeholder.jpg",
-//     alt: "Test image 3",
-//     size: "md",
-//     getImage: fn(),
-//     closeImage: fn(),
-//     previousImage: fn(),
-//     nextImage: fn(),
-//   },
-//   {
-//     id: "3",
-//     enabled: false,
-//     loading: true,
-//     src: "/images/placeholder.jpg",
-//     alt: "Test image 1",
-//     size: "md",
-//     getImage: fn(),
-//     closeImage: fn(),
-//     previousImage: fn(),
-//     nextImage: fn(),
-//   },
-// ];
-
 export const TestingSorting: Story = {
   play: async ({ canvas, step }) => {
     await step("enabled pictures appear first", async () => {
