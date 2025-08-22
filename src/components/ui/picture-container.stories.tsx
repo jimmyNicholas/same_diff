@@ -4,7 +4,7 @@ import { expect, fn } from "storybook/test";
 
 const meta = {
   component: PictureContainer,
-  title: "PictureContainer",
+  title: "Components/ui/PictureContainer",
   tags: ["autodocs"],
   args: {
     pictures: Array.from({ length: 5 }, (_, index) => ({
