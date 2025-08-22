@@ -28,12 +28,14 @@ const VocabRow = ({
     <div className="flex flex-row gap-2 border-gray-200 border-2 rounded-md p-2 items-center">
       <Input
         value={vocabulary.word}
-        onChange={(e) => addWord(e.target.value)}
+        onBlur={(e) => addWord(e.target.value)}
         className="w-44 flex-shrink-0"
+        data-testid="vocab-row-input"
       />
       <div className="overflow-x-auto w-full">
         <PictureContainer
           pictures={pictures}
+          data-testid="picture-container"
         />
       </div>
     </div>

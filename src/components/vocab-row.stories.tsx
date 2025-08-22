@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import VocabRow from "./vocab-row";
-import { expect, fn } from "storybook/test";
+import { expect } from "storybook/test";
 import { VocabularyWord } from "@/lib/types";
 
 const mockVocabWord: VocabularyWord = {
