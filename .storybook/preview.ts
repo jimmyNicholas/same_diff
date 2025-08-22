@@ -15,13 +15,6 @@ const preview: Preview = {
     a11y: {
       test: 'todo'
     },
-    // // Add this to fix the Jest matchers issue
-    // test: {
-    //   globals: {
-    //     expect: true,
-    //     vi: true,
-    //   },
-    //},
   },
 };
 
