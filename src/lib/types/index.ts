@@ -4,8 +4,7 @@ export interface VocabularyWord {
   id: string;
   word: string;
   definition: string;
-  imageUrl?: string;
-  approved: boolean;
+  imageUrl: string[];
   createdAt: Date;
 }
 

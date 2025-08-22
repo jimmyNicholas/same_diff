@@ -1,6 +1,7 @@
 //import { Button } from "./button";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Loader, Plus, X } from "lucide-react";
+import { useVocabularyActions } from "@/lib/hooks/useVocabularyActions";
 
 export interface PictureProps {
   /** Unique identifier for the picture */
@@ -15,14 +16,6 @@ export interface PictureProps {
   alt?: string;
   /** Size variant: sm (100px), md (150px), lg (200px) */
   size?: "sm" | "md" | "lg";
-  /** Callback when + button is clicked */
-  getImage?: () => void;
-  /** Callback when close button is clicked */
-  closeImage?: () => void;
-  /** Callback for previous image navigation */
-  previousImage?: () => void;
-  /** Callback for next image navigation */
-  nextImage?: () => void;
 }
 
 const Picture = ({
@@ -32,11 +25,10 @@ const Picture = ({
   src,
   alt,
   size,
-  getImage,
-  closeImage,
-  previousImage,
-  nextImage,
 }: PictureProps) => {
+
+  const { getImage, closeImage, previousImage, nextImage } = useVocabularyActions();
+  
   // default size is md
   let pictureWidth = 150,
     pictureHeight = 150;
