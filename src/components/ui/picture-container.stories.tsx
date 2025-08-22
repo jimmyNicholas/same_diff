@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import PictureContainer from "./picture-container";
-import { expect, fn, spyOn } from "storybook/test";
+import { expect, fn } from "storybook/test";
 import { PictureProps } from "./picture";
 
 const meta = {
