@@ -181,26 +181,32 @@ export const TestingSorting: Story = {
         '[data-testid^="picture-"]'
       );
 
-      const enabledTestId = "picture-2";
-      const disabledTestId = "picture-3";
-      const loadingTestId = "picture-1";
+      const enabledTestIds = ["picture-2", "picture-5"];
+      const disabledTestIds = ["picture-1"];
+      const loadingTestIds = ["picture-3", "picture-4"];
 
-      await expect(pictureElements[0]).toHaveAttribute(
-        "data-testid",
-        enabledTestId
+      await expect(enabledTestIds).toContain(
+        pictureElements[0].getAttribute("data-testid")
       );
-      await expect(pictureElements[1]).toHaveAttribute(
-        "data-testid",
-        disabledTestId
+      await expect(enabledTestIds).toContain(
+        pictureElements[1].getAttribute("data-testid")
       );
-      await expect(pictureElements[2]).toHaveAttribute(
-        "data-testid",
-        loadingTestId
+
+      await expect(loadingTestIds).toContain(
+        pictureElements[2].getAttribute("data-testid")
+      );
+      await expect(loadingTestIds).toContain(
+        pictureElements[3].getAttribute("data-testid")
+      );
+
+      await expect(disabledTestIds).toContain(
+        pictureElements[4].getAttribute("data-testid")
       );
     });
   },
   args: {
     pictures: [
+      // disabled
       {
         id: "1",
         enabled: false,
@@ -209,6 +215,7 @@ export const TestingSorting: Story = {
         alt: "Test 1",
         size: "md",
       },
+      // enabled
       {
         id: "2",
         enabled: true,
@@ -217,12 +224,31 @@ export const TestingSorting: Story = {
         alt: "Test 2",
         size: "md",
       },
+      // loading
       {
         id: "3",
         enabled: false,
         loading: true,
         src: "/images/placeholder.jpg",
         alt: "Test 3",
+        size: "md",
+      },
+      // loading
+      {
+        id: "4",
+        enabled: false,
+        loading: true,
+        src: "/images/placeholder.jpg",
+        alt: "Test 4",
+        size: "md",
+      },
+      // enabled
+      {
+        id: "5",
+        enabled: true,
+        loading: false,
+        src: "/images/placeholder.jpg",
+        alt: "Test 5",
         size: "md",
       },
     ],
