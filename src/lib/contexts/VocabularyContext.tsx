@@ -32,7 +32,7 @@ const mockVocabWords: VocabularyWord[] = [
     },
   ];
 
-const VocabularyContext = createContext<VocabularyContextType | undefined>(undefined);
+export const VocabularyContext = createContext<VocabularyContextType | undefined>(undefined);
 
 export function VocabularyProvider({ children }: { children: ReactNode }) {
   const [vocabWords, setVocabWords] = useState<VocabularyWord[]>(mockVocabWords);

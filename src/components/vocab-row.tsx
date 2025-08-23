@@ -1,7 +1,7 @@
 import { VocabularyWord } from "@/lib/types";
 import { Input } from "./ui/input";
 import PictureContainer from "./ui/picture-container";
-import { useVocabularyActions } from "@/lib/hooks/useVocabularyActions";
+import { useVocabulary } from "@/lib/contexts/VocabularyContext";
 
 interface VocabRowProps {
   vocabulary: VocabularyWord;
@@ -10,7 +10,7 @@ interface VocabRowProps {
 const VocabRow = ({
   vocabulary,
 }: VocabRowProps) => {
-  const { addWord } = useVocabularyActions();
+  const { addWord } = useVocabulary();
   const pictures = Array.from({ length: 5 }, (_, index) => {
     const imageUrl = vocabulary.imageUrl[index];
 
