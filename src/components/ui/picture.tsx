@@ -1,7 +1,7 @@
 //import { Button } from "./button";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Loader, Plus, X } from "lucide-react";
-import { useVocabularyActions } from "@/lib/hooks/useVocabularyActions";
+import { useVocabulary } from "@/lib/contexts/VocabularyContext";
 
 export interface PictureProps {
   /** Unique identifier for the picture */
@@ -27,7 +27,7 @@ const Picture = ({
   size,
 }: PictureProps) => {
 
-  const { getImage, closeImage, previousImage, nextImage } = useVocabularyActions();
+  const { getImage, closeImage, previousImage, nextImage } = useVocabulary();
   
   // default size is md
   let pictureWidth = 150,
