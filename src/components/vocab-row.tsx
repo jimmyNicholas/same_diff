@@ -1,7 +1,8 @@
 import { VocabularyWord } from "@/lib/types";
 import { Input } from "./ui/input";
 import PictureContainer from "./ui/picture-container";
-import { useVocabularyActions } from "@/lib/hooks/useVocabularyActions";
+import { useVocabulary } from "@/lib/contexts/VocabularyContext";
+import { useState } from "react";
 
 interface VocabRowProps {
   vocabulary: VocabularyWord;
@@ -10,7 +11,13 @@ interface VocabRowProps {
 const VocabRow = ({
   vocabulary,
 }: VocabRowProps) => {
-  const { addWord } = useVocabularyActions();
+  const { addWord } = useVocabulary();
+  const [inputValue, setInputValue] = useState(vocabulary.word);
+  
+  const handleOnBlur = () => {
+    addWord(inputValue);
+  };
+
   const pictures = Array.from({ length: 5 }, (_, index) => {
     const imageUrl = vocabulary.imageUrl[index];
 
@@ -27,8 +34,9 @@ const VocabRow = ({
   return (
     <div className="flex flex-row gap-2 border-gray-200 border-2 rounded-md p-2 items-center">
       <Input
-        value={vocabulary.word}
-        onBlur={(e) => addWord(e.target.value)}
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onBlur={handleOnBlur}
         className="w-44 flex-shrink-0"
         data-testid="vocab-row-input"
       />

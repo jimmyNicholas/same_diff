@@ -1,10 +1,26 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import Picture from "./picture";
 import { expect, userEvent } from "storybook/test";
+import { MockVocabularyProvider, mockVocabularyActions } from "@/test-utils/MockVocabularyProvider";
+
+const { mockGetImage, mockNextImage, mockPreviousImage, mockCloseImage } = mockVocabularyActions;
+
+const MockProvider = ({ children }: { children: React.ReactNode }) => (
+  <MockVocabularyProvider>
+    {children}
+  </MockVocabularyProvider>
+);
 
 const meta = {
   component: Picture,
   title: "Components/ui/Picture",
+  decorators: [
+    (Story) => (
+      <MockProvider>
+        <Story />
+      </MockProvider>
+    ),
+  ],
   tags: ["autodocs"],
   args: {
     id: "1",
@@ -84,6 +100,7 @@ export const TestingDisabledPicture: Story = {
     await expect(canvas.getByTestId("get-image-button-1")).toBeInTheDocument();
 
     await userEvent.click(canvas.getByTestId("get-image-button-1"));
+    await expect(mockGetImage).toHaveBeenCalled();
   },
   args: {
     enabled: false,
@@ -98,6 +115,7 @@ export const TestingLoadingPicture: Story = {
     await expect(canvas.queryByTestId("next-image-button-1")).toBeNull();
     await expect(canvas.getByTestId("get-image-button-1")).toBeInTheDocument();
     await userEvent.click(canvas.getByTestId("get-image-button-1"));
+    await expect(mockGetImage).not.toHaveBeenCalled();
   },
   args: {
     enabled: false,
@@ -114,16 +132,18 @@ export const TestingEnabledPicture: Story = {
     const closeImageButton = canvas.getByTestId("close-image-button-1");
     await expect(closeImageButton).toBeInTheDocument();
     await userEvent.click(closeImageButton);
-    
+    await expect(mockCloseImage).toHaveBeenCalled();
 
     // previous and next image buttons
     const previousImageButton = canvas.getByTestId("previous-image-button-1");
     await expect(previousImageButton).toBeInTheDocument();
     await userEvent.click(previousImageButton);
+    await expect(mockPreviousImage).toHaveBeenCalled();
 
     const nextImageButton = canvas.getByTestId("next-image-button-1");
     await expect(nextImageButton).toBeInTheDocument();
     await userEvent.click(nextImageButton);
+    await expect(mockNextImage).toHaveBeenCalled();
 
     // get image button is null
     await expect(canvas.queryByTestId("get-image-button-1")).toBeNull();
