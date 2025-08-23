@@ -1,17 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import AdminActivities from "./page";
-import { VocabularyWord } from "@/lib/types";
-
-const mockVocabWord: VocabularyWord = {
-  id: "1",
-  word: "pug",
-  definition: "A small breed of dog with a wrinkly face",
-  imageUrl: ["/images/pug-1.jpg", "/images/pug-2.jpg"],
-  createdAt: new Date("2024-01-01"),
-};
+import { MockVocabularyProvider, mockVocabularyWords } from "@/test-utils/MockVocabularyProvider";
 
 const meta = {
   component: AdminActivities,
+  decorators: [
+    (Story) => (
+      <MockVocabularyProvider>
+        <Story />
+      </MockVocabularyProvider>
+    ),
+  ],
   title: "Pages/Admin/Activities",
   tags: ["autodocs"],
 } satisfies Meta<typeof AdminActivities>;
@@ -23,6 +22,6 @@ export const Default: Story = {};
 
 export const WithVocabRow: Story = {
   args: {
-    vocabRow: mockVocabWord,
+    vocabRow: mockVocabularyWords[0],
   },
 };

@@ -1,36 +1,26 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import VocabRow from "./vocab-row";
-import { expect } from "storybook/test";
+import { expect, userEvent } from "storybook/test";
 import { VocabularyWord } from "@/lib/types";
+import { MockVocabularyProvider, mockVocabularyWords, mockVocabularyActions } from "@/test-utils/MockVocabularyProvider";
 
-const mockVocabWord: VocabularyWord = {
-  id: "1",
-  word: "pug",
-  definition: "A small breed of dog with a wrinkly face",
-  imageUrl: ["/images/pug-1.jpg", "/images/pug-2.jpg"],
-  createdAt: new Date("2024-01-01"),
-};
+const mockVocabWord: VocabularyWord = mockVocabularyWords[0];
+const mockVocabWordNoImages: VocabularyWord = mockVocabularyWords[1];
+const mockVocabWordSingleImage: VocabularyWord = mockVocabularyWords[2];
 
-const mockVocabWordNoImages: VocabularyWord = {
-  id: "2",
-  word: "golden retriever",
-  definition: "A calm and friendly dog with a golden coat",
-  imageUrl: [],
-  createdAt: new Date("2024-01-02"),
-};
-
-const mockVocabWordSingleImage: VocabularyWord = {
-  id: "3",
-  word: "border collie",
-  definition: "An energetic breed of dog that herds sheep",
-  imageUrl: ["/images/placeholder.jpg"],
-  createdAt: new Date("2024-01-03"),
-};
+const { mockAddWord } = mockVocabularyActions;
 
 const meta = {
   component: VocabRow,
   title: "Components/Vocabulary/VocabRow",
   tags: ["autodocs"],
+  decorators: [
+    (Story) => (
+      <MockVocabularyProvider>
+        <Story />
+      </MockVocabularyProvider>
+    ),
+  ],
   args: {
     vocabulary: mockVocabWord,
   },
@@ -71,11 +61,13 @@ export const TestingInputInteraction: Story = {
       await expect(input).toBeInTheDocument();
     });
 
-    await step("input change triggers onAddWord", async () => {
+    await step("input blur triggers onAddWord", async () => {
       const input = canvas.getByDisplayValue("pug");
       await expect(input).toBeInTheDocument();
-// Note: The current component calls onAddWord on every change
-      // This might need to be adjusted based on your requirements
+      await userEvent.clear(input);
+      await userEvent.type(input, "boxer");
+      await userEvent.tab();
+      await expect(mockAddWord).toHaveBeenCalledWith("boxer");
     });
   },
 };

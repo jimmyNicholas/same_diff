@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import PictureContainer from "./picture-container";
-import { expect, fn } from "storybook/test";
+import { expect } from "storybook/test";
 
 const meta = {
   component: PictureContainer,
@@ -14,10 +14,6 @@ const meta = {
       src: "/images/placeholder.jpg",
       alt: `Test image ${index + 1}`,
       size: "md",
-      getImage: fn(),
-      closeImage: fn(),
-      previousImage: fn(),
-      nextImage: fn(),
     })),
   },
 } satisfies Meta<typeof PictureContainer>;
