@@ -1,27 +1,14 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import Picture from "./picture";
 import { expect, userEvent } from "storybook/test";
-import { fn } from "storybook/test";
-import { VocabularyContext } from "@/lib/contexts/VocabularyContext";
+import { MockVocabularyProvider, mockVocabularyActions } from "@/test-utils/MockVocabularyProvider";
 
-const mockGetImage = fn();
-const mockAddWord = fn();
-const mockNextImage = fn();
-const mockPreviousImage = fn();
-const mockCloseImage = fn();
+const { mockGetImage, mockNextImage, mockPreviousImage, mockCloseImage } = mockVocabularyActions;
 
 const MockProvider = ({ children }: { children: React.ReactNode }) => (
-  <VocabularyContext.Provider value={{
-    getImage: mockGetImage,
-    addWord: mockAddWord,
-    nextImage: mockNextImage,
-    previousImage: mockPreviousImage,
-    closeImage: mockCloseImage,
-    vocabWords: [],
-    currentImageIndex: 0,
-  }}>
+  <MockVocabularyProvider>
     {children}
-  </VocabularyContext.Provider>
+  </MockVocabularyProvider>
 );
 
 const meta = {
