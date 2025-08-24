@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { VocabularyWord } from '../types';
+import { VocabularyWordType } from '@/lib/types';
 import { mockVocabularyWords } from '@/test-utils/MockVocabularyProvider';
 
 interface VocabularyContextType {
-  vocabWords: VocabularyWord[];
+  vocabWords: VocabularyWordType[];
   currentImageIndex: number;
   addWord: (word: string) => void;
   getImage: () => void;
@@ -15,7 +15,7 @@ interface VocabularyContextType {
 export const VocabularyContext = createContext<VocabularyContextType | undefined>(undefined);
 
 export function VocabularyProvider({ children }: { children: ReactNode }) {
-  const [vocabWords, setVocabWords] = useState<VocabularyWord[]>(mockVocabularyWords);
+  const [vocabWords, setVocabWords] = useState<VocabularyWordType[]>(mockVocabularyWords);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const addWord = (word: string) => {
@@ -24,7 +24,14 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
       id: (prev.length + 1).toString(),
       word,
       definition: "",
-      imageUrl: [],
+      imageUrl: [{
+        id: (prev.length + 1).toString(),
+        enabled: false,
+        loading: false,
+        src: "",
+        alt: "",
+        size: "md",
+      }],
       createdAt: new Date(),
     }]);
   };

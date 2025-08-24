@@ -1,6 +1,6 @@
 import { fn } from "storybook/test";
 import { VocabularyContext } from "@/lib/contexts/VocabularyContext";
-import { VocabularyWord } from "@/lib/types";
+import { VocabularyWordType } from "@/lib/types";
 
 export const mockVocabularyActions = {
   mockGetImage: fn(),
@@ -14,7 +14,21 @@ export const mockVocabularyWords = [{
         id: "1",
         word: "pug",
         definition: "A small breed of dog with a wrinkly face",
-        imageUrl: ["/images/pug-1.jpg", "/images/pug-2.jpg"],
+        imageUrl: [{
+          id: "1",
+          enabled: false,
+          loading: false,
+          src: "/images/pug-1.jpg",
+          alt: "pug-1",
+          size: "md",
+        }, {
+          id: "2",
+          enabled: false,
+          loading: false,
+          src: "/images/pug-2.jpg",
+          alt: "pug-2",
+          size: "md",
+        }],
         createdAt: new Date("2024-01-01"),
      },{
         id: "2",
@@ -26,10 +40,17 @@ export const mockVocabularyWords = [{
         id: "3",
         word: "border collie",
         definition: "An energetic breed of dog that herds sheep",
-        imageUrl: ["/images/placeholder.jpg"],
+        imageUrl: [{
+          id: "1",
+          enabled: false,
+          loading: false,
+          src: "/images/placeholder.jpg",
+          alt: "placeholder",
+          size: "md",
+        }],
         createdAt: new Date("2024-01-03"),
       }
-] as VocabularyWord[];
+] as VocabularyWordType[];
 
 export const MockVocabularyProvider = ({
   children,

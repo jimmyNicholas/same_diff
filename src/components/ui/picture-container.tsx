@@ -1,8 +1,9 @@
-import Picture, { PictureProps } from "./picture";
+import Picture from "./picture";
+import { PictureType } from "@/lib/types";
 
 interface PictureContainerProps {
   /** Array of pictures to display */
-  pictures: PictureProps[];
+  pictures: PictureType[];
 }
 
 const PictureContainer = ({
