@@ -1,10 +1,19 @@
 // Core types for ELICOS Game Generator
 
-export interface VocabularyWord {
+export interface PictureType {
+  id: string;
+  enabled: boolean;
+  loading: boolean;
+  src?: string;
+  alt?: string;
+  size?: "sm" | "md" | "lg";
+}
+
+export interface VocabularyWordType {
   id: string;
   word: string;
   definition: string;
-  imageUrl: string[];
+  imageUrl: PictureType[];
   createdAt: Date;
 }
 
@@ -12,7 +21,7 @@ export interface Unit {
   id: string;
   name: string;
   level: string;
-  vocabulary: VocabularyWord[];
+  vocabulary: VocabularyWordType[];
   createdAt: Date;
 }
 

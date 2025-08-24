@@ -1,11 +1,11 @@
-import { VocabularyWord } from "@/lib/types";
+import { VocabularyWordType } from "@/lib/types";
 import { Input } from "./ui/input";
 import PictureContainer from "./ui/picture-container";
 import { useVocabulary } from "@/lib/contexts/VocabularyContext";
 import { useState } from "react";
 
 interface VocabRowProps {
-  vocabulary: VocabularyWord;
+  vocabulary: VocabularyWordType;
 }
 
 const VocabRow = ({
@@ -25,7 +25,7 @@ const VocabRow = ({
       id: `${vocabulary.id}-${index}`,
       enabled: !!imageUrl,
       loading: false,
-      src: imageUrl || undefined,
+      src: imageUrl?.src || undefined,
       alt: vocabulary.word + " " + (index + 1),
       size: "sm" as const,
     };
