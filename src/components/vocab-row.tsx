@@ -13,20 +13,20 @@ const VocabRow = ({
 }: VocabRowProps) => {
   const { addWord } = useVocabulary();
   const [inputValue, setInputValue] = useState(vocabulary.word);
-  
+  //console.log("vocabulary: ", vocabulary);
   const handleOnBlur = () => {
     addWord(inputValue);
   };
 
   const pictures = Array.from({ length: 5 }, (_, index) => {
     const imageUrl = vocabulary.imageUrl[index];
-
+    console.log("imageUrl: ", imageUrl);
     return {
-      id: `${vocabulary.id}-${index}`,
-      enabled: !!imageUrl,
+      id: imageUrl?.id,
+      enabled: imageUrl?.enabled,
       loading: false,
       src: imageUrl?.src || undefined,
-      alt: vocabulary.word + " " + (index + 1),
+      alt: vocabulary.word + " " + (index),
       size: "sm" as const,
     };
   });

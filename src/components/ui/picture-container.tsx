@@ -22,9 +22,9 @@ const PictureContainer = ({
       data-testid="picture-container"
       className="flex flex-wrap justify-around gap-2"
     >
-      {sortedPictures.map((picture) => (
+      {sortedPictures.map((picture, index) => (
         <Picture
-          key={picture.id}
+          key={index}
           {...picture}
         />
       ))}
