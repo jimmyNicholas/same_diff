@@ -49,16 +49,22 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
   // Takes pictureId, finds the VocabularyWord, and updates picture.enabled to false
   const closeImage = (pictureId: string) => {
     console.log("closeImage called for pictureId: ", pictureId);
+    const [wordId, imageIndexStr] = pictureId.split("-");
+    const imageIndex = parseInt(imageIndexStr);
     
     setVocabWords(prevVocabWords => 
-      prevVocabWords.map(word => ({
-        ...word,
-        imageUrl: word.imageUrl.map(image =>
-          image.id === pictureId 
-            ? { ...image, enabled: false }
-            : image
-        )
-      }))
+      prevVocabWords.map(word => 
+        word.id === wordId 
+          ? {
+              ...word,
+              imageUrl: word.imageUrl.map((image, idx) =>
+                idx === imageIndex 
+                  ? { ...image, enabled: false }
+                  : image
+              )
+            }
+          : word
+      )
     );
   };
 

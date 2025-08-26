@@ -9,6 +9,7 @@ interface PictureContainerProps {
 const PictureContainer = ({
   pictures,
 }: PictureContainerProps) => {
+  //const sortedPictures = pictures;
   const sortedPictures = pictures.sort((a, b) => {
     if (a.enabled && !b.enabled) return -1;
     if (!a.enabled && b.enabled) return 1;

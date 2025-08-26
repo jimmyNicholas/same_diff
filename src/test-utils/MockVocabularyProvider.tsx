@@ -25,14 +25,14 @@ export const mockVocabularyWords = [{
         word: "pug",
         definition: "A small breed of dog with a wrinkly face",
         imageUrl: [{
-          id: "1-1",
+          id: "1-0",
           enabled: true,
           loading: false,
           src: "/images/pug-1.jpg",
           alt: "pug-0",
           size: "md",
         }, {
-          id: "1-2",
+          id: "1-1",
           enabled: true,
           loading: false,
           src: "/images/pug-2.jpg",
