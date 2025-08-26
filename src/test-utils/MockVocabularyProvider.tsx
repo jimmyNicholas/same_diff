@@ -3,11 +3,21 @@ import { VocabularyContext } from "@/lib/contexts/VocabularyContext";
 import { VocabularyWordType } from "@/lib/types";
 
 export const mockVocabularyActions = {
-  mockGetImage: fn(),
-  mockAddWord: fn(),
-  mockNextImage: fn(),
-  mockPreviousImage: fn(),
-  mockCloseImage: fn(),
+  mockGetImage: fn().mockImplementation((pictureId: string) => {
+    console.log("mockGetImage called for pictureId: ", pictureId);
+  })  ,
+  mockAddWord: fn().mockImplementation((word: string) => {
+    console.log("mockAddWord called for word: ", word);
+  }),
+  mockNextImage: fn().mockImplementation(() => {
+    console.log("mockNextImage called");
+  }),
+  mockPreviousImage: fn().mockImplementation(() => {
+    console.log("mockPreviousImage called");
+  }),
+  mockCloseImage: fn().mockImplementation((pictureId: string) => {
+    console.log("mockCloseImage called for pictureId: ", pictureId);
+  }),
 };
 
 export const mockVocabularyWords = [{
@@ -15,18 +25,18 @@ export const mockVocabularyWords = [{
         word: "pug",
         definition: "A small breed of dog with a wrinkly face",
         imageUrl: [{
-          id: "1",
-          enabled: false,
+          id: "1-0",
+          enabled: true,
           loading: false,
           src: "/images/pug-1.jpg",
-          alt: "pug-1",
+          alt: "pug-0",
           size: "md",
         }, {
-          id: "2",
-          enabled: false,
+          id: "1-1",
+          enabled: true,
           loading: false,
           src: "/images/pug-2.jpg",
-          alt: "pug-2",
+          alt: "pug-1",
           size: "md",
         }],
         createdAt: new Date("2024-01-01"),
@@ -41,8 +51,8 @@ export const mockVocabularyWords = [{
         word: "border collie",
         definition: "An energetic breed of dog that herds sheep",
         imageUrl: [{
-          id: "1",
-          enabled: false,
+          id: "3-0",
+          enabled: true,
           loading: false,
           src: "/images/placeholder.jpg",
           alt: "placeholder",
@@ -65,7 +75,6 @@ export const MockVocabularyProvider = ({
       previousImage: mockVocabularyActions.mockPreviousImage,
       closeImage: mockVocabularyActions.mockCloseImage,
       vocabWords: mockVocabularyWords,
-      currentImageIndex: 0,
     }}
   >
     {children}

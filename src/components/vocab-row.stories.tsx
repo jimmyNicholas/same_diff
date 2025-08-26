@@ -1,12 +1,12 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import VocabRow from "./vocab-row";
 import { expect, userEvent } from "storybook/test";
-import { VocabularyWord } from "@/lib/types";
+import { VocabularyWordType } from "@/lib/types";
 import { MockVocabularyProvider, mockVocabularyWords, mockVocabularyActions } from "@/test-utils/MockVocabularyProvider";
 
-const mockVocabWord: VocabularyWord = mockVocabularyWords[0];
-const mockVocabWordNoImages: VocabularyWord = mockVocabularyWords[1];
-const mockVocabWordSingleImage: VocabularyWord = mockVocabularyWords[2];
+const mockVocabWord: VocabularyWordType = mockVocabularyWords[0];
+const mockVocabWordNoImages: VocabularyWordType = mockVocabularyWords[1];
+const mockVocabWordSingleImage: VocabularyWordType = mockVocabularyWords[2];
 
 const { mockAddWord } = mockVocabularyActions;
 

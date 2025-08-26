@@ -66,7 +66,7 @@ const Picture = ({
               data-testid={"close-image-button-" + id}
               aria-label="Close this image"
               className="bg-destructive/70 rounded-full"
-              onClick={closeImage}
+              onClick={() => closeImage(id)}
             >
               <X
                 style={{
