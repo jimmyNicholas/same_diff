@@ -21,25 +21,6 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
 
   const addWord = (word: string) => {
     console.log("addWord called for word: ", word);
-    setVocabWords((prev) => [
-      ...prev,
-      {
-        id: (prev.length + 1).toString(),
-        word,
-        definition: "",
-        imageUrl: [
-          {
-            id: (prev.length + 1).toString(),
-            enabled: false,
-            loading: false,
-            src: "",
-            alt: "",
-            size: "md",
-          },
-        ],
-        createdAt: new Date(),
-      },
-    ]);
   };
 
   const getImage = () => {
@@ -49,23 +30,6 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
   // Takes pictureId, finds the VocabularyWord, and updates picture.enabled to false
   const closeImage = (pictureId: string) => {
     console.log("closeImage called for pictureId: ", pictureId);
-    const [wordId, imageIndexStr] = pictureId.split("-");
-    const imageIndex = parseInt(imageIndexStr);
-    
-    setVocabWords(prevVocabWords => 
-      prevVocabWords.map(word => 
-        word.id === wordId 
-          ? {
-              ...word,
-              imageUrl: word.imageUrl.map((image, idx) =>
-                idx === imageIndex 
-                  ? { ...image, enabled: false }
-                  : image
-              )
-            }
-          : word
-      )
-    );
   };
 
   const previousImage = () => {

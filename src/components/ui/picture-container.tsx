@@ -1,9 +1,9 @@
 import Picture from "./picture";
-import { PictureType } from "@/lib/types";
+import { PictureProps } from "./picture"
 
 interface PictureContainerProps {
   /** Array of pictures to display */
-  pictures: PictureType[];
+  pictures: PictureProps[];
 }
 
 const PictureContainer = ({
@@ -11,10 +11,10 @@ const PictureContainer = ({
 }: PictureContainerProps) => {
   //const sortedPictures = pictures;
   const sortedPictures = pictures.sort((a, b) => {
-    if (a.enabled && !b.enabled) return -1;
-    if (!a.enabled && b.enabled) return 1;
-    if (a.loading && !b.loading) return -1;
-    if (!a.loading && b.loading) return 1;
+    if (a.status === "enabled" && b.status !== "enabled") return -1;
+    if (a.status !== "enabled" && b.status === "enabled") return 1;
+    if (a.status === "loading" && b.status !== "loading") return -1;
+    if (a.status !== "loading" && b.status === "loading") return 1;
     return 0;
   });
 

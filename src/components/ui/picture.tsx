@@ -2,62 +2,44 @@
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Loader, Plus, X } from "lucide-react";
 import { useVocabulary } from "@/lib/contexts/VocabularyContext";
+import { ImageType } from "@/lib/types";
 
 export interface PictureProps {
   /** Unique identifier for the picture */
   id: string;
-  /** Whether the picture is enabled/visible */
-  enabled: boolean;
-  /** Loading state for the picture */
-  loading: boolean;
-  /** Image source URL */
-  src?: string;
-  /** Alt text for accessibility */
-  alt?: string;
-  /** Size variant: sm (100px), md (150px), lg (200px) */
-  size?: "sm" | "md" | "lg";
+  /** Status of the picture */
+  status: "enabled" | "disabled" | "loading" | "error";
+  /** Image object */
+  image: ImageType;
 }
 
 const Picture = ({
   id,
-  enabled,
-  loading,
-  src,
-  alt,
-  size,
+  status,
+  image,
 }: PictureProps) => {
 
   const { getImage, closeImage, previousImage, nextImage } = useVocabulary();
   
   // default size is md
-  let pictureWidth = 150,
-    pictureHeight = 150;
+  const pictureWidth = 150;
+  const pictureHeight = 150;
 
-  if (size === "sm") {
-    pictureWidth = 100;
-    pictureHeight = 100;
-  } else if (size === "lg") {
-    pictureWidth = 200;
-    pictureHeight = 200;
-  }
-
-  const finalWidth = pictureWidth;
-  const finalHeight = pictureHeight;
 
   return (
     <div data-testid={"picture-" + id}>
-      {enabled && src && alt ? (
+      {status === "enabled" && image ? (
         <div
           className="relative rounded-md"
-          style={{ width: `${finalWidth}px`, height: `${finalHeight}px` }}
+          style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
         >
           <Image
-            src={src}
-            alt={alt}
-            width={finalWidth}
-            height={finalHeight}
+            src={image.src}
+            alt={image.alt}
+            width={pictureWidth}
+            height={pictureHeight}
             className={`object-cover rounded-md`}
-            style={{ width: `${finalWidth}px`, height: `${finalHeight}px` }}
+            style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
           />
 
           {/* Close Button */}
@@ -70,8 +52,8 @@ const Picture = ({
             >
               <X
                 style={{
-                  width: `${Math.min(finalWidth, finalHeight) * 0.15}px`,
-                  height: `${Math.min(finalWidth, finalHeight) * 0.15}px`,
+                  width: `${Math.min(pictureWidth, pictureHeight) * 0.15}px`,
+                  height: `${Math.min(pictureWidth, pictureHeight) * 0.15}px`,
                 }}
                 className="text-white m-1"
               />
@@ -88,8 +70,8 @@ const Picture = ({
             >
               <ChevronLeft
                 style={{
-                  width: `${Math.min(finalWidth, finalHeight) * 0.15}px`,
-                  height: `${Math.min(finalWidth, finalHeight) * 0.15}px`,
+                  width: `${Math.min(pictureWidth, pictureHeight) * 0.15}px`,
+                  height: `${Math.min(pictureWidth, pictureHeight) * 0.15}px`,
                 }}
                 className="w-full h-full"
               />
@@ -106,8 +88,8 @@ const Picture = ({
             >
               <ChevronRight
                 style={{
-                  width: `${Math.min(finalWidth, finalHeight) * 0.15}px`,
-                  height: `${Math.min(finalWidth, finalHeight) * 0.15}px`,
+                  width: `${Math.min(pictureWidth, pictureHeight) * 0.15}px`,
+                  height: `${Math.min(pictureWidth, pictureHeight) * 0.15}px`,
                 }}
                 className="w-full h-full"
               />
@@ -118,10 +100,10 @@ const Picture = ({
         <div
           data-testid={"get-image-button-" + id}
           className="flex items-center justify-center border rounded-md cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
-          style={{ width: `${finalWidth}px`, height: `${finalHeight}px` }}
-          onClick={!loading ? getImage : undefined}
+          style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
+          onClick={status === "loading" ? undefined : getImage}
         >
-          {loading ? (
+          {status === "loading" ? (
             <Loader className="w-full h-full animate-pulse" />
           ) : (
             <Plus className="w-full h-full" />

@@ -24,31 +24,24 @@ const meta = {
   tags: ["autodocs"],
   args: {
     id: "1",
-    enabled: false,
-    loading: false,
-    src: "/images/placeholder.jpg",
-    alt: "Placeholder Image",
-    size: "md",
+    status: "disabled",
+    image: {
+      id: "1",
+      status: "disabled",
+      src: "/images/placeholder.jpg",
+      alt: "Placeholder Image",
+    },
   },
   argTypes: {
     id: {
       control: "text",
     },
-    enabled: {
-      control: "boolean",
+    status: {
+      control: "select",
+      options: ["enabled", "disabled", "loading", "error"],
     },
-    loading: {
-      control: "boolean",
-    },
-    src: {
-      control: "text",
-    },
-    alt: {
-      control: "text",
-    },
-    size: {
-      options: ["sm", "md", "lg"],
-      defaultValue: "md",
+    image: {
+      control: "object",
     },
   },
 } satisfies Meta<typeof Picture>;
@@ -60,34 +53,25 @@ export const Default: Story = {};
 
 export const Enabled: Story = {
   args: {
-    enabled: true,
-    src: "/images/placeholder.jpg",
-    alt: "Test image",
+    status: "enabled",
+    image: {
+      id: "1",
+      status: "enabled",
+      src: "/images/placeholder.jpg",
+      alt: "Test image",
+    },
   },
 };
 
 export const Loading: Story = {
   args: {
-    enabled: false,
-    loading: true,
-  },
-};
-
-export const Small: Story = {
-  args: {
-    enabled: true,
-    src: "/images/placeholder.jpg",
-    alt: "Test image",
-    size: "sm",
-  },
-};
-
-export const Large: Story = {
-  args: {
-    enabled: true,
-    src: "/images/placeholder.jpg",
-    alt: "Test image",
-    size: "lg",
+    status: "loading",
+    image: {
+      id: "1",
+      status: "loading",
+      src: "/images/placeholder.jpg",
+      alt: "Test image",
+    },
   },
 };
 
@@ -103,7 +87,13 @@ export const TestingDisabledPicture: Story = {
     await expect(mockGetImage).toHaveBeenCalled();
   },
   args: {
-    enabled: false,
+    status: "disabled",
+    image: {
+      id: "1",
+      status: "disabled",
+      src: "/images/placeholder.jpg",
+      alt: "Placeholder Image",
+    },
   },
 };
 
@@ -118,8 +108,13 @@ export const TestingLoadingPicture: Story = {
     await expect(mockGetImage).not.toHaveBeenCalled();
   },
   args: {
-    enabled: false,
-    loading: true,
+    status: "loading",
+    image: {
+      id: "1",
+      status: "loading",
+      src: "/images/placeholder.jpg",
+      alt: "Test image",
+    },
   },
 };
 
@@ -149,6 +144,12 @@ export const TestingEnabledPicture: Story = {
     await expect(canvas.queryByTestId("get-image-button-1")).toBeNull();
   },
   args: {
-    enabled: true,
+    status: "enabled",
+    image: {
+      id: "1",
+      status: "enabled",
+      src: "/images/placeholder.jpg",
+      alt: "Test image",
+    },
   },
 };
