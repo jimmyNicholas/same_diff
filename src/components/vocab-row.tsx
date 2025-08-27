@@ -18,14 +18,11 @@ const VocabRow = ({
   };
 
   const pictures = Array.from({ length: 5 }, (_, index) => {
-    const imageUrl = vocabulary.imageUrl[index];
+    const image = vocabulary.images[index];
     return {
       id: vocabulary.id + "-" + index,
-      enabled: imageUrl ? imageUrl.enabled : false,
-      loading: false,
-      src: imageUrl?.src || undefined,
-      alt: vocabulary.word + " " + (index + 1),
-      size: "sm" as const,
+      status: image?.status || "disabled",
+      image: image,
     };
   });
 

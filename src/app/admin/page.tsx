@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { validateAdminCredentials, createSession } from '@/lib/utils/auth';
+import { useVocabulary } from '@/lib/contexts/VocabularyContext';
 
 export default function AdminPage() {
   const router = useRouter();

@@ -24,39 +24,33 @@ export const mockVocabularyWords = [{
         id: "1",
         word: "pug",
         definition: "A small breed of dog with a wrinkly face",
-        imageUrl: [{
+        images: [{
           id: "1-0",
-          enabled: true,
-          loading: false,
+          status: "enabled",
           src: "/images/pug-1.jpg",
           alt: "pug-0",
-          size: "md",
         }, {
           id: "1-1",
-          enabled: true,
-          loading: false,
+          status: "enabled",
           src: "/images/pug-2.jpg",
           alt: "pug-1",
-          size: "md",
         }],
         createdAt: new Date("2024-01-01"),
      },{
         id: "2",
         word: "golden retriever",
         definition: "A calm and friendly dog with a golden coat",
-        imageUrl: [],
+        images: [],
         createdAt: new Date("2024-01-02"),
      },{
         id: "3",
         word: "border collie",
         definition: "An energetic breed of dog that herds sheep",
-        imageUrl: [{
+        images: [{
           id: "3-0",
-          enabled: true,
-          loading: false,
+          status: "enabled",
           src: "/images/placeholder.jpg",
-          alt: "placeholder",
-          size: "md",
+          alt: "placeholder", 
         }],
         createdAt: new Date("2024-01-03"),
       }
