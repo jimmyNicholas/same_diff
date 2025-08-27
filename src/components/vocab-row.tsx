@@ -20,7 +20,8 @@ const VocabRow = ({
   const pictures = Array.from({ length: 5 }, (_, index) => {
     const image = vocabulary.images[index];
     return {
-      id: vocabulary.id + "-" + index,
+      wordId: vocabulary.id,
+      pictureId: index.toString(),
       status: image?.status || "disabled",
       image: image,
     };

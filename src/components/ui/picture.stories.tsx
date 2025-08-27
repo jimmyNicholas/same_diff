@@ -3,7 +3,7 @@ import Picture from "./picture";
 import { expect, userEvent } from "storybook/test";
 import { MockVocabularyProvider, mockVocabularyActions } from "@/test-utils/MockVocabularyProvider";
 
-const { mockGetImage, mockNextImage, mockPreviousImage, mockCloseImage } = mockVocabularyActions;
+const { mockShowImage, mockHideImage, mockNavigateImage } = mockVocabularyActions;
 
 const MockProvider = ({ children }: { children: React.ReactNode }) => (
   <MockVocabularyProvider>
@@ -23,17 +23,22 @@ const meta = {
   ],
   tags: ["autodocs"],
   args: {
-    id: "1",
+    wordId: "1",
+    pictureId: "1",
     status: "disabled",
     image: {
-      id: "1",
+      wordId: "1",
+      pictureId: "1",
       status: "disabled",
       src: "/images/placeholder.jpg",
       alt: "Placeholder Image",
     },
   },
   argTypes: {
-    id: {
+    wordId: {
+      control: "text",
+    },
+    pictureId: {
       control: "text",
     },
     status: {
@@ -55,7 +60,8 @@ export const Enabled: Story = {
   args: {
     status: "enabled",
     image: {
-      id: "1",
+      wordId: "1",
+      pictureId: "1",
       status: "enabled",
       src: "/images/placeholder.jpg",
       alt: "Test image",
@@ -67,7 +73,8 @@ export const Loading: Story = {
   args: {
     status: "loading",
     image: {
-      id: "1",
+      wordId: "1",
+      pictureId: "1",
       status: "loading",
       src: "/images/placeholder.jpg",
       alt: "Test image",
@@ -84,12 +91,13 @@ export const TestingDisabledPicture: Story = {
     await expect(canvas.getByTestId("get-image-button-1")).toBeInTheDocument();
 
     await userEvent.click(canvas.getByTestId("get-image-button-1"));
-    await expect(mockGetImage).toHaveBeenCalled();
+    await expect(mockShowImage).toHaveBeenCalled();
   },
   args: {
     status: "disabled",
     image: {
-      id: "1",
+      wordId: "1",
+      pictureId: "1",
       status: "disabled",
       src: "/images/placeholder.jpg",
       alt: "Placeholder Image",
@@ -105,12 +113,13 @@ export const TestingLoadingPicture: Story = {
     await expect(canvas.queryByTestId("next-image-button-1")).toBeNull();
     await expect(canvas.getByTestId("get-image-button-1")).toBeInTheDocument();
     await userEvent.click(canvas.getByTestId("get-image-button-1"));
-    await expect(mockGetImage).not.toHaveBeenCalled();
+    await expect(mockShowImage).not.toHaveBeenCalled();
   },
   args: {
     status: "loading",
     image: {
-      id: "1",
+      wordId: "1",
+      pictureId: "1",
       status: "loading",
       src: "/images/placeholder.jpg",
       alt: "Test image",
@@ -127,18 +136,18 @@ export const TestingEnabledPicture: Story = {
     const closeImageButton = canvas.getByTestId("close-image-button-1");
     await expect(closeImageButton).toBeInTheDocument();
     await userEvent.click(closeImageButton);
-    await expect(mockCloseImage).toHaveBeenCalled();
+    await expect(mockHideImage).toHaveBeenCalled();
 
     // previous and next image buttons
     const previousImageButton = canvas.getByTestId("previous-image-button-1");
     await expect(previousImageButton).toBeInTheDocument();
     await userEvent.click(previousImageButton);
-    await expect(mockPreviousImage).toHaveBeenCalled();
+    await expect(mockNavigateImage).toHaveBeenCalled();
 
     const nextImageButton = canvas.getByTestId("next-image-button-1");
     await expect(nextImageButton).toBeInTheDocument();
     await userEvent.click(nextImageButton);
-    await expect(mockNextImage).toHaveBeenCalled();
+    await expect(mockNavigateImage).toHaveBeenCalled();
 
     // get image button is null
     await expect(canvas.queryByTestId("get-image-button-1")).toBeNull();
@@ -146,7 +155,8 @@ export const TestingEnabledPicture: Story = {
   args: {
     status: "enabled",
     image: {
-      id: "1",
+      wordId: "1",
+      pictureId: "1",
       status: "enabled",
       src: "/images/placeholder.jpg",
       alt: "Test image",

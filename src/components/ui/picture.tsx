@@ -5,8 +5,10 @@ import { useVocabulary } from "@/lib/contexts/VocabularyContext";
 import { ImageType } from "@/lib/types";
 
 export interface PictureProps {
+  /** Unique identifier for the parent word */
+  wordId: string;
   /** Unique identifier for the picture */
-  id: string;
+  pictureId: string;
   /** Status of the picture */
   status: "enabled" | "disabled" | "loading" | "error";
   /** Image object */
@@ -14,12 +16,13 @@ export interface PictureProps {
 }
 
 const Picture = ({
-  id,
+  wordId,
+  pictureId,
   status,
   image,
 }: PictureProps) => {
 
-  const { getImage, closeImage, previousImage, nextImage } = useVocabulary();
+  const { showImage, hideImage, navigateImage } = useVocabulary();
   
   // default size is md
   const pictureWidth = 150;
@@ -27,7 +30,7 @@ const Picture = ({
 
 
   return (
-    <div data-testid={"picture-" + id}>
+    <div data-testid={"picture-" + wordId + "-" + pictureId}>
       {status === "enabled" && image ? (
         <div
           className="relative rounded-md"
@@ -45,10 +48,10 @@ const Picture = ({
           {/* Close Button */}
           <div className="absolute top-0 right-0 rounded-full m-1">
             <button
-              data-testid={"close-image-button-" + id}
+              data-testid={"close-image-button-" + wordId + "-" + pictureId}
               aria-label="Close this image"
               className="bg-destructive/70 rounded-full"
-              onClick={() => closeImage(id)}
+              onClick={() => hideImage(wordId, pictureId)}
             >
               <X
                 style={{
@@ -63,10 +66,10 @@ const Picture = ({
           {/* Previous Button */}
           <div className="absolute top-[45%] left-0 rounded-full ml-1">
             <button
-              data-testid={"previous-image-button-" + id}
+              data-testid={"previous-image-button-" + wordId + "-" + pictureId}
               aria-label="Previous image"
               className="bg-secondary/70 rounded-full"
-              onClick={previousImage}
+              onClick={() => navigateImage("previous", wordId, pictureId)}
             >
               <ChevronLeft
                 style={{
@@ -81,10 +84,10 @@ const Picture = ({
           {/* Next Button */}
           <div className="absolute top-[45%] right-0 rounded-full mr-1">
             <button
-              data-testid={"next-image-button-" + id}
+              data-testid={"next-image-button-" + wordId + "-" + pictureId}
               aria-label="Next image"
               className="bg-secondary/70 rounded-full"
-              onClick={nextImage}
+              onClick={() => navigateImage("next", wordId, pictureId)}
             >
               <ChevronRight
                 style={{
@@ -98,10 +101,10 @@ const Picture = ({
         </div>
       ) : (
         <div
-          data-testid={"get-image-button-" + id}
+          data-testid={"get-image-button-" + wordId + "-" + pictureId}
           className="flex items-center justify-center border rounded-md cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
           style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
-          onClick={status === "loading" ? undefined : getImage}
+          onClick={status === "loading" ? undefined : () => showImage(wordId, pictureId)}
         >
           {status === "loading" ? (
             <Loader className="w-full h-full animate-pulse" />

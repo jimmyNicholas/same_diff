@@ -1,7 +1,8 @@
 // Core types for ELICOS Game Generator
 
 export interface ImageType {
-  id: string;
+  wordId: string;
+  pictureId: string;
   status: "enabled" | "disabled" | "loading" | "error";
   src: string;
   alt: string;

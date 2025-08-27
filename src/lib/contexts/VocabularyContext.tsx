@@ -5,10 +5,13 @@ import { mockVocabularyWords } from "@/test-utils/MockVocabularyProvider";
 interface VocabularyContextType {
   vocabWords: VocabularyWordType[];
   addWord: (word: string) => void;
-  getImage: () => void;
-  closeImage: (pictureId: string) => void;
-  previousImage: () => void;
-  nextImage: () => void;
+  showImage: (wordId: string, pictureId: string) => void;
+  hideImage: (wordId: string, pictureId: string) => void;
+  navigateImage: (
+    command: "previous" | "next",
+    wordId: string,
+    pictureId: string
+  ) => void;
 }
 
 export const VocabularyContext = createContext<
@@ -23,21 +26,61 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
     console.log("addWord called for word: ", word);
   };
 
-  const getImage = () => {
-    console.log("getImage called");
+  const showImage = (wordId: string, pictureId: string) => {
+    console.log(
+      "showImage called for wordId: ",
+      wordId,
+      " and pictureId: ",
+      pictureId
+    );
+    // if image.src === null, search for image in the pool
+
+    // update the word in the current position in the array
+    setVocabWords(
+      vocabWords.map((word) =>
+        word.id === wordId
+          ? {
+              ...word,
+              images: word.images.map((image) =>
+                image.pictureId === pictureId
+                  ? { ...image, status: "enabled" }
+                  : image
+              ),
+            }
+          : word
+      )
+    );
+  };  
+
+  const hideImage = (wordId: string, pictureId: string) => {
+    console.log("hideImage called for wordId: ", wordId, " and pictureId: ", pictureId);
+    // update the word in the current position in the array
+    setVocabWords(
+      vocabWords.map((word) =>
+        word.id === wordId
+          ? {
+              ...word,
+              images: word.images.map((image) =>
+                image.pictureId === pictureId
+                  ? { ...image, status: "disabled" }
+                  : image
+              ),
+            }
+          : word
+      )
+    );
   };
 
-  // Takes pictureId, finds the VocabularyWord, and updates picture.enabled to false
-  const closeImage = (pictureId: string) => {
-    console.log("closeImage called for pictureId: ", pictureId);
-  };
 
-  const previousImage = () => {
-    console.log("previousImage called");
-  };
+  
+  const navigateImage = (
+    command: "previous" | "next",
+    wordId: string,
+    pictureId: string
+  ) => {
+    console.log("navigateImage called for wordId: ", wordId, " and pictureId: ", pictureId);
+    // update the word in the current position in the array
 
-  const nextImage = () => {
-    console.log("nextImage called");
   };
 
   return (
@@ -45,10 +88,9 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
       value={{
         vocabWords,
         addWord,
-        getImage,
-        closeImage,
-        previousImage,
-        nextImage,
+        showImage,
+        hideImage,
+        navigateImage,
       }}
     >
       {children}

@@ -3,20 +3,17 @@ import { VocabularyContext } from "@/lib/contexts/VocabularyContext";
 import { VocabularyWordType } from "@/lib/types";
 
 export const mockVocabularyActions = {
-  mockGetImage: fn().mockImplementation((pictureId: string) => {
-    console.log("mockGetImage called for pictureId: ", pictureId);
-  })  ,
   mockAddWord: fn().mockImplementation((word: string) => {
     console.log("mockAddWord called for word: ", word);
   }),
-  mockNextImage: fn().mockImplementation(() => {
-    console.log("mockNextImage called");
+  mockShowImage: fn().mockImplementation((pictureId: string) => {
+    console.log("mockShowImage called for pictureId: ", pictureId);
   }),
-  mockPreviousImage: fn().mockImplementation(() => {
-    console.log("mockPreviousImage called");
+  mockHideImage: fn().mockImplementation((pictureId: string) => {
+    console.log("mockHideImage called for pictureId: ", pictureId);
   }),
-  mockCloseImage: fn().mockImplementation((pictureId: string) => {
-    console.log("mockCloseImage called for pictureId: ", pictureId);
+  mockNavigateImage: fn().mockImplementation((command: "previous" | "next", pictureId: string) => {
+    console.log("mockNavigateImage called for pictureId: ", pictureId);
   }),
 };
 
@@ -25,12 +22,15 @@ export const mockVocabularyWords = [{
         word: "pug",
         definition: "A small breed of dog with a wrinkly face",
         images: [{
-          id: "1-0",
+          wordId: "1",
+          pictureId: "0",
           status: "enabled",
           src: "/images/pug-1.jpg",
           alt: "pug-0",
+          
         }, {
-          id: "1-1",
+          wordId: "1",
+          pictureId: "1",
           status: "enabled",
           src: "/images/pug-2.jpg",
           alt: "pug-1",
@@ -47,7 +47,8 @@ export const mockVocabularyWords = [{
         word: "border collie",
         definition: "An energetic breed of dog that herds sheep",
         images: [{
-          id: "3-0",
+          wordId: "3",
+          pictureId: "0",
           status: "enabled",
           src: "/images/placeholder.jpg",
           alt: "placeholder", 
@@ -63,11 +64,10 @@ export const MockVocabularyProvider = ({
 }) => (
   <VocabularyContext.Provider
     value={{
-      getImage: mockVocabularyActions.mockGetImage,
       addWord: mockVocabularyActions.mockAddWord,
-      nextImage: mockVocabularyActions.mockNextImage,
-      previousImage: mockVocabularyActions.mockPreviousImage,
-      closeImage: mockVocabularyActions.mockCloseImage,
+      showImage: mockVocabularyActions.mockShowImage,
+      hideImage: mockVocabularyActions.mockHideImage,
+      navigateImage: mockVocabularyActions.mockNavigateImage,
       vocabWords: mockVocabularyWords,
     }}
   >
