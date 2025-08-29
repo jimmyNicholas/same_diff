@@ -9,21 +9,13 @@ interface PictureContainerProps {
 const PictureContainer = ({
   pictures,
 }: PictureContainerProps) => {
-  //const sortedPictures = pictures;
-  const sortedPictures = pictures.sort((a, b) => {
-    if (a.status === "enabled" && b.status !== "enabled") return -1;
-    if (a.status !== "enabled" && b.status === "enabled") return 1;
-    if (a.status === "loading" && b.status !== "loading") return -1;
-    if (a.status !== "loading" && b.status === "loading") return 1;
-    return 0;
-  });
-
+ 
   return (
     <div
       data-testid="picture-container"
       className="flex flex-wrap justify-around gap-2"
     >
-      {sortedPictures.map((picture, index) => (
+      {pictures.map((picture, index) => (
         <Picture
           key={index}
           {...picture}
