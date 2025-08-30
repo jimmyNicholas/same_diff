@@ -1,6 +1,6 @@
 import { fn } from "storybook/test";
 import { ImageAction, VocabularyContext } from "@/lib/contexts/VocabularyContext";
-import { VocabularyWordType } from "@/lib/types";
+import { ImageType, VocabularyWordType } from "@/lib/types";
 
 export const mockVocabularyActions = {
   mockAddWord: fn().mockImplementation((word: string) => {
@@ -16,18 +16,39 @@ export const mockVocabularyWords = [
     id: "1",
     word: "pug",
     definition: "A small breed of dog with a wrinkly face",
-    images: [
+    imageSlots: [
       {
         id: "0",
         status: "enabled",
-        src: "/images/pug-1.jpg",
-        alt: "pug-0",
+        image: {
+          id: "0",
+          src: "/images/pug-1.jpg",
+          alt: "pug-0",
+        },
       },
       {
         id: "1",
         status: "enabled",
-        src: "/images/pug-2.jpg",
-        alt: "pug-1",
+        image: {
+          id: "1",
+          src: "/images/pug-2.jpg",
+          alt: "pug-1",
+        },
+      },
+      {
+        id: "2",
+        status: "disabled",
+        image: undefined,
+      },
+      {
+        id: "3",
+        status: "disabled",
+        image: undefined,
+      },
+      {
+        id: "4",
+        status: "disabled",
+        image: undefined,
       },
     ],
     createdAt: new Date("2024-01-01"),
@@ -36,24 +57,77 @@ export const mockVocabularyWords = [
     id: "2",
     word: "golden retriever",
     definition: "A calm and friendly dog with a golden coat",
-    images: [],
+    imageSlots: [
+      {
+        id: "0",
+        status: "disabled",
+        image: {
+          id: "0",
+          src: "/images/golden-retriever-1.jpg",
+          alt: "golden-retriever-0",
+        },
+      },
+      {
+        id: "1",
+        status: "disabled",
+        image: undefined,
+      },
+      {
+        id: "2",
+        status: "disabled",
+        image: undefined,
+      },
+      {
+        id: "3",
+        status: "disabled",
+        image: undefined,
+      },
+      {
+        id: "4",
+        status: "disabled",
+        image: undefined,
+      },
+    ],
     createdAt: new Date("2024-01-02"),
   },
   {
     id: "3",
     word: "border collie",
     definition: "An energetic breed of dog that herds sheep",
-    images: [
+    imageSlots: [
       {
         id: "0",
         status: "enabled",
-        src: "/images/placeholder.jpg",
-        alt: "placeholder",
+        image: {
+          id: "0",
+          src: "/images/placeholder.jpg",
+          alt: "placeholder",
+        },
+      },
+      {
+        id: "1",
+        status: "disabled",
+        image: undefined,
+      },
+      {
+        id: "2",
+        status: "disabled",
+        image: undefined,
+      },
+      {
+        id: "3",
+        status: "disabled",
+        image: undefined,
+      },
+      {
+        id: "4",
+        status: "disabled",
+        image: undefined,
       },
     ],
     createdAt: new Date("2024-01-03"),
   },
-] as VocabularyWordType[];
+];
 
 export const MockVocabularyProvider = ({
   children,
@@ -63,8 +137,8 @@ export const MockVocabularyProvider = ({
   <VocabularyContext.Provider
     value={{
       addWord: mockVocabularyActions.mockAddWord,
+      vocabWords: mockVocabularyWords as VocabularyWordType[],
       manageImage: mockVocabularyActions.mockManageImage,
-      vocabWords: mockVocabularyWords,
     }}
   >
     {children}
@@ -122,4 +196,4 @@ export const mockImagePool = [
     src: "/images/pug-10.jpg",
     alt: "pug-9",
   },
-];
+] as ImageType[];

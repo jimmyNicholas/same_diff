@@ -1,17 +1,22 @@
 // Core types for ELICOS Game Generator
 
 export interface ImageType {
-  id: string;  
-  status: "enabled" | "disabled" | "loading" | "error";
+  id: string;
   src: string;
   alt: string;
+}
+
+export interface ImageSlotType {
+  id: string;  
+  status: "enabled" | "disabled" | "loading" | "error";
+  image: ImageType | null;
 }
 
 export interface VocabularyWordType {
   id: string;
   word: string;
   definition: string;
-  images: ImageType[];
+  imageSlots: ImageSlotType[];
   createdAt: Date;
 }
 

@@ -15,22 +15,10 @@ const VocabRow = ({ vocabulary }: VocabRowProps) => {
     addWord(inputValue);
   };
 
-  // const pictures = Array.from({ length: 5 }, (_, index) => {
-  //   const image = vocabulary.images[index];
-  //   return {
-  //     wordId: vocabulary.id,
-  //     pictureId: index.toString(),
-  //     status: image?.status || "disabled",
-  //     image: image,
-  //     onManageImage: (action: ImageAction) => manageImage(vocabulary.id, action),
-  //   };
-  // });
-
-  const pictures = vocabulary.images.map((image) => ({
-    id: image.id,
-    status: image.status,
-    image: image,
-    onManageImage: (action: ImageAction) => manageImage(vocabulary.id, action),
+  const imageSlots = vocabulary.imageSlots.map((imageSlot) => ({
+    imageSlot,
+    onImageClick: (action: ImageAction) =>
+      manageImage(vocabulary.id, imageSlot.id, action),
   }));
 
   return (
@@ -44,7 +32,7 @@ const VocabRow = ({ vocabulary }: VocabRowProps) => {
       />
       <div className="overflow-x-auto w-full">
         <PictureContainer
-          pictures={pictures}
+          imageSlots={imageSlots}
           data-testid="picture-container"
         />
       </div>

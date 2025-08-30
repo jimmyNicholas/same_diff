@@ -1,33 +1,23 @@
 //import { Button } from "./button";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Loader, Plus, X } from "lucide-react";
+import { ImageSlotType } from "@/lib/types";
 import { ImageAction } from "@/lib/contexts/VocabularyContext";
-import { ImageType } from "@/lib/types";
 
-export interface PictureProps {
-  /** Unique identifier for the picture */
-  id: string;
-  /** Status of the picture */
-  status: "enabled" | "disabled" | "loading" | "error";
-  /** Image object */
-  image: ImageType;
-  /** Function to manage the image */
-  onManageImage: (action: ImageAction) => void;
+export interface PicturePropsType {
+  imageSlot: ImageSlotType;
+  onImageClick: (action: ImageAction) => void;
 }
 
-const Picture = ({
-  id,
-  status,
-  image,
-  onManageImage,
-}: PictureProps) => {
-  
+const Picture = ({ imageSlot, onImageClick }: PicturePropsType) => {
+  const { id, status, image } = imageSlot;
+
   // default size is md
   const pictureWidth = 150;
   const pictureHeight = 150;
 
   return (
-    <div>
+    <div key={id}>
       {status === "enabled" && image ? (
         <div
           className="relative rounded-md"
@@ -47,7 +37,7 @@ const Picture = ({
             <button
               aria-label="Close this image"
               className="bg-destructive/70 rounded-full"
-              onClick={() => onManageImage({ type: "toggle", pictureId: id })}
+              onClick={() => onImageClick({ type: "toggle" })}
             >
               <X
                 style={{
@@ -64,7 +54,7 @@ const Picture = ({
             <button
               aria-label="Previous image"
               className="bg-secondary/70 rounded-full"
-              onClick={() => onManageImage({ type: "navigate", direction: "previous", pictureId: id })}
+              onClick={() => onImageClick({ type: "navigate", direction: "previous" })}
             >
               <ChevronLeft
                 style={{
@@ -81,7 +71,7 @@ const Picture = ({
             <button
               aria-label="Next image"
               className="bg-secondary/70 rounded-full"
-              onClick={() => onManageImage({ type: "navigate", direction: "next", pictureId: id })}
+              onClick={() => onImageClick({ type: "navigate", direction: "next" })}
             >
               <ChevronRight
                 style={{
@@ -97,7 +87,11 @@ const Picture = ({
         <div
           className="flex items-center justify-center border rounded-md cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
           style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
-          onClick={status === "loading" ? undefined : () => onManageImage({ type: "toggle", pictureId: id })}
+          onClick={
+            status === "loading"
+              ? undefined
+              : () => onImageClick({ type: "toggle" })
+          }
         >
           {status === "loading" ? (
             <Loader className="w-full h-full animate-pulse" />

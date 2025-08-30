@@ -1,25 +1,19 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
-import { ImageType, VocabularyWordType } from "@/lib/types";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { ImageType, ImageSlotType, VocabularyWordType } from "@/lib/types";
 import {
   mockVocabularyWords,
   mockImagePool,
 } from "@/test-utils/MockVocabularyProvider";
 
 export type ImageAction =
-  | { type: "navigate"; direction: "previous" | "next"; pictureId: string }
-  | { type: "toggle"; pictureId: string };
+  | { type: "navigate"; direction: "previous" | "next"}
+  | { type: "toggle"};
 
 export interface VocabularyContextType {
   vocabWords: VocabularyWordType[];
-  manageImage: (wordId: string, action: ImageAction) => void;
   // TODO: update word interface
   addWord: (word: string) => void;
+  manageImage: (wordId: string, imageSlotId: string, action: ImageAction) => void;
 }
 
 export const VocabularyContext = createContext<
@@ -27,8 +21,18 @@ export const VocabularyContext = createContext<
 >(undefined);
 
 export function VocabularyProvider({ children }: { children: ReactNode }) {
-  const [vocabWords, setVocabWords] =
-    useState<VocabularyWordType[]>(mockVocabularyWords);
+  const [vocabWords, setVocabWords] = useState<VocabularyWordType[]>(
+    mockVocabularyWords.map((word) => ({
+      ...word,
+      imageSlots: word.imageSlots.map((imageSlot) => ({
+        ...imageSlot,
+        onImageClick: (action: ImageAction) =>
+          manageImage(word.id, imageSlot.id, action),
+        image:
+          imageSlot.image === undefined ? mockImagePool[2] : imageSlot.image,
+      })),
+    })) as VocabularyWordType[]
+  );
 
   const addWord = (word: string) => {
     console.log("addWord called for word: ", word);
@@ -102,121 +106,200 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
   //   return mockImagePool[nextImage];
   // };
 
-  const navigateImage = (
-    direction: "previous" | "next",
+  /* HELPERS*/
+  const updateImage = (
     wordId: string,
-    pictureId: string
+    pictureId: string,
+    // part of image type
+    newData: Partial<ImageType>
+  ) => {
+    setVocabWords(
+      vocabWords.map((w) => {
+        if (w.id === wordId) {
+          return {
+            ...w,
+            imageSlots: w.imageSlots.map((img) =>
+              img.id === pictureId ? { ...img, ...newData } : img
+            ),
+          };
+        }
+        return w;
+      })
+    );
+  };
+
+  const getNextImageIndex = (
+    currentIndex: number,
+    enabledPoolIndexes: number[],
+    maxIndex: number,
+    direction: "previous" | "next"
+  ) => {
+    let nextIndex = currentIndex;
+    if (direction === "next") {
+      nextIndex = currentIndex + 1;
+    } else {
+      nextIndex = currentIndex - 1;
+    }
+    console.log("nextIndex: ", nextIndex);
+    if (!enabledPoolIndexes.includes(nextIndex)) {
+      return nextIndex;
+    }
+    if (nextIndex === maxIndex) {
+      return null;
+    }
+    return getNextImageIndex(
+      nextIndex,
+      enabledPoolIndexes,
+      maxIndex,
+      direction
+    );
+  };
+  /* HELPERS*/
+  /* 
+  const navigateImage = (
+    word: VocabularyWordType,
+    picture: ImageType,
+    direction: "previous" | "next"
   ) => {
     console.log(
-      "navigateImage called for wordId: ",
-      wordId,
-      direction,
-      " and pictureId: ",
-      pictureId
+      "navigateImage called for word: ",
+      word,
+      " and picture: ",
+      picture,
+      " and direction: ",
+      direction
     );
 
-    // const availableImage = getAvailableImage(wordId, pictureId, command);
-
-    // // if new image -> update the image at pictureId to the new image
-    // if (!availableImage) {
-    //   return;
-    // }
-    // setVocabWords(
-    //   vocabWords.map((word) =>
-    //     word.id === wordId
-    //       ? {
-    //           ...word,
-    //           images: word.images.map((image) =>
-    //             image.pictureId === pictureId
-    //               ? {
-    //                   ...image,
-    //                   src: availableImage.src,
-    //                   alt: availableImage.alt,
-    //                 }
-    //               : image
-    //           ),
-    //         }
-    //       : word
-    //   )
-    // );
-  };
-
-  /* HELPERS*/
-  const findWord = (wordId: string) => {
-    return vocabWords.find((word) => word.id === wordId);
-  };
-  const findImage = (word: VocabularyWordType, pictureId: string) => {
-    return word.images.find((image) => image.id === pictureId);
-  };
-  const updateImage = (wordId: string, pictureId: string, image: ImageType) => {
-    setVocabWords(vocabWords.map((word) => {
-      if (word.id === wordId) {
-        return { ...word, images: word.images.map((img) => img.id === pictureId ? image : img) };
-      }
-      return word;
-    }));
-  };
-  /* HELPERS*/
-
-  const toggleImage = (wordId: string, pictureId: string) => {
-    console.log(
-      "toggleImage called for wordId: ",
-      wordId,
-      " and pictureId: ",
-      pictureId
+    // get next available image
+    const currentPoolIndex = mockImagePool.findIndex(
+      (poolImage) => poolImage.src === picture.src
     );
-    if (pictureId === "DISABLED") {
-      navigateImage('next', wordId, pictureId);
+
+    if (currentPoolIndex === -1) {
+      console.log("Refilling pool");
+      //refillPool(word);
       return;
-    };
-    const word = findWord(wordId);
-    if (!word) return;
-    const image = findImage(word, pictureId);
-    if (!image) return;
-    const newStatus = image.status === "enabled" ? "disabled" : "enabled";
+    }
 
-    // Delegate to update layer
-    updateImage(wordId, pictureId, { ...image, status: newStatus as "enabled" | "disabled" });
+    // get all src from the images with status "enabled"
+    const enabledPoolIndexes = word.images
+      .map((image) =>
+        image.status === "enabled"
+          ? mockImagePool.findIndex((poolImage) => poolImage.src === image.src)
+          : null
+      )
+      .filter((src) => src !== null);
+
+    const nextImageIndex = getNextImageIndex(
+      currentPoolIndex,
+      enabledPoolIndexes,
+      mockImagePool.length,
+      direction
+    );
+    if (nextImageIndex === null) {
+      console.log("Refilling pool");
+      return;
+    }
+
+    const nextImage = mockImagePool[nextImageIndex];
+    console.log("nextImage: ", nextImage);
+    updateImage(word, picture, {
+      id: picture.id,
+      status: "enabled" as const,
+      src: nextImage.src,
+      alt: nextImage.alt,
+    });
+  };
+  */
+
+  /* IMAGE STATUS RULES */
+  const getImageStatusAction = (
+    status: "enabled" | "disabled"
+  ): {
+    newStatus: "enabled" | "disabled";
+  } => {
+    return {
+      newStatus: status === "enabled" ? "disabled" : "enabled",
+    };
   };
 
-  const manageImage = (wordId: string, action: ImageAction) => {
+  /* MANAGE IMAGE */
+  const manageImage = (
+    wordId: string,
+    imageSlotId: string,
+    action: ImageAction
+  ) => {
+    const prepareRequest = (
+      wordId: string,
+      imageSlotId: string
+    ):
+      | { data: { word: VocabularyWordType; imageSlot: ImageSlotType } }
+      | Error => {
+      console.log(
+        "prepareRequest called for wordId: ",
+        wordId,
+        " and imageSlotId: ",
+        imageSlotId
+      );
+      const word = vocabWords.find((word) => word.id === wordId);
+      if (!word) return new Error(`Word not found for wordId: ${wordId}`);
+      const imageSlot = word.imageSlots.find(
+        (imageSlot) => imageSlot.id === imageSlotId
+      );
+      if (!imageSlot)
+        return new Error(`Picture not found for wordId: ${imageSlotId}`);
+      return { data: { word, imageSlot } };
+    };
+
+    const requestData = prepareRequest(wordId, imageSlotId);
+    if (requestData instanceof Error) return console.error(requestData.message);
+    const { word, imageSlot } = requestData.data;
+
     switch (action.type) {
       case "navigate":
-        navigateImage(action.direction, wordId, action.pictureId);
+        //navigateImage(word, imageSlot, action.direction);
+
+        //
         break;
       case "toggle":
-        toggleImage(wordId, action.pictureId);
+        //toggleImage(word, imageSlot);
+
+        // image staus rules
+        if (imageSlot.status !== "enabled" && imageSlot.status !== "disabled")
+          return;
+        const { newStatus } = getImageStatusAction(imageSlot.status);
+
+        const newData: Partial<ImageSlotType> = {
+          status: newStatus,
+        };
+
+        updateImage(word.id, imageSlot.id, newData);
+
         break;
       default:
         throw new Error("Invalid action type");
     }
   };
 
-  // check vocabwords has 5 image slots, if not, add disabled image slots
+
+  const setImageSlots = (word: VocabularyWordType) => {
+    return word.imageSlots.map((imageSlot) => ({
+      ...imageSlot,
+      onImageClick: (action: ImageAction) =>
+        manageImage(word.id, imageSlot.id, action),
+      image:
+        imageSlot.image === undefined ? mockImagePool[2] : imageSlot.image,
+    }));
+  };
+
   useEffect(() => {
-    const updatedVocabWords = vocabWords.map((word) => {
-      if (word.images.length === 5) return word;
-
-      const disabledSlots = Array(5 - word.images.length)
-        .fill(null)
-        .map(() => ({
-          id: "DISABLED",
-          status: "disabled" as const,
-          src: "",
-          alt: "",
-        }));
-
-      return {
+    setVocabWords(
+      vocabWords.map((word) => ({
         ...word,
-        images: [...word.images, ...disabledSlots],
-      };
-    });
-
-    // Only update if there are actual changes
-    if (JSON.stringify(updatedVocabWords) !== JSON.stringify(vocabWords)) {
-      setVocabWords(updatedVocabWords);
-    }
-  }, [vocabWords]);
+        imageSlots: setImageSlots(word),
+      }))
+    );
+  }, []);
 
   return (
     <VocabularyContext.Provider
