@@ -145,55 +145,100 @@ export const MockVocabularyProvider = ({
   </VocabularyContext.Provider>
 );
 
-export const mockImagePool = [
+interface ImagePoolType {
+  wordId: string;
+  imagePool: ImageType[];
+};
+
+export const mockImagePool: ImagePoolType[] = [
   {
-    id: "0",
-    src: "/images/pug-1.jpg",
-    alt: "pug-0",
+    wordId: "1",
+    imagePool: [
+      {
+        id: "0",
+        src: "/images/pug-1.jpg",
+        alt: "pug-0",
+      },
+      {
+        id: "1",
+        src: "/images/pug-2.jpg",
+        alt: "pug-1",
+      },
+      {
+        id: "2",
+        src: "/images/pug-3.jpg",
+        alt: "pug-2",
+      },
+      {
+        id: "3",
+        src: "/images/pug-4.jpg",
+        alt: "pug-3",
+      },
+      {
+        id: "4",
+        src: "/images/pug-5.jpg",
+        alt: "pug-4",
+      },
+      {
+        id: "5",
+        src: "/images/pug-6.jpg",
+        alt: "pug-5",
+      },
+      {
+        id: "6",
+        src: "/images/pug-7.jpg",
+        alt: "pug-6",
+      },
+      {
+        id: "7",
+        src: "/images/pug-8.jpg",
+        alt: "pug-7",
+      },
+      {
+        id: "8",
+        src: "/images/pug-9.jpg",
+        alt: "pug-8",
+      },
+      {
+        id: "9",
+        src: "/images/pug-10.jpg",
+        alt: "pug-9",
+      },
+    ],
   },
   {
-    id: "1",
-    src: "/images/pug-2.jpg",
-    alt: "pug-1",
+    wordId: "2",
+    imagePool: [
+      {
+        id: "0",
+        src: "/images/golden-retriever-1.jpg",
+        alt: "golden-retriever-0",
+      },
+      {
+        id: "1",
+        src: "/images/golden-retriever-2.jpg",
+        alt: "golden-retriever-1",
+      },
+      {
+        id: "2",
+        src: "/images/golden-retriever-3.jpg",
+        alt: "golden-retriever-2",
+      },
+      {
+        id: "3",
+        src: "/images/golden-retriever-4.jpg",
+        alt: "golden-retriever-3",
+      },
+    ],
   },
   {
-    id: "2",
-    src: "/images/pug-3.jpg",
-    alt: "pug-2",
+    wordId: "3",
+    imagePool: [
+      {
+        id: "0",
+        src: "/images/border-collie-1.jpg",
+        alt: "border-collie-0",
+      },
+    ],
   },
-  {
-    id: "3",
-    src: "/images/pug-4.jpg",
-    alt: "pug-3",
-  },
-  {
-    id: "4",
-    src: "/images/pug-5.jpg",
-    alt: "pug-4",
-  },
-  {
-    id: "5",
-    src: "/images/pug-6.jpg",
-    alt: "pug-5",
-  },
-  {
-    id: "6",
-    src: "/images/pug-7.jpg",
-    alt: "pug-6",
-  },
-  {
-    id: "7",
-    src: "/images/pug-8.jpg",
-    alt: "pug-7",
-  },
-  {
-    id: "8",
-    src: "/images/pug-9.jpg",
-    alt: "pug-8",
-  },
-  {
-    id: "9",
-    src: "/images/pug-10.jpg",
-    alt: "pug-9",
-  },
-] as ImageType[];
+];

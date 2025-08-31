@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { ImageType, ImageSlotType, VocabularyWordType } from "@/lib/types";
 import {
   mockVocabularyWords,
@@ -6,14 +12,18 @@ import {
 } from "@/test-utils/MockVocabularyProvider";
 
 export type ImageAction =
-  | { type: "navigate"; direction: "previous" | "next"}
-  | { type: "toggle"};
+  | { type: "navigate"; direction: "previous" | "next" }
+  | { type: "toggle" };
 
 export interface VocabularyContextType {
   vocabWords: VocabularyWordType[];
   // TODO: update word interface
   addWord: (word: string) => void;
-  manageImage: (wordId: string, imageSlotId: string, action: ImageAction) => void;
+  manageImage: (
+    wordId: string,
+    imageSlotId: string,
+    action: ImageAction
+  ) => void;
 }
 
 export const VocabularyContext = createContext<
@@ -28,8 +38,6 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
         ...imageSlot,
         onImageClick: (action: ImageAction) =>
           manageImage(word.id, imageSlot.id, action),
-        image:
-          imageSlot.image === undefined ? mockImagePool[2] : imageSlot.image,
       })),
     })) as VocabularyWordType[]
   );
@@ -128,32 +136,32 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const getNextImageIndex = (
-    currentIndex: number,
-    enabledPoolIndexes: number[],
-    maxIndex: number,
-    direction: "previous" | "next"
-  ) => {
-    let nextIndex = currentIndex;
-    if (direction === "next") {
-      nextIndex = currentIndex + 1;
-    } else {
-      nextIndex = currentIndex - 1;
-    }
-    console.log("nextIndex: ", nextIndex);
-    if (!enabledPoolIndexes.includes(nextIndex)) {
-      return nextIndex;
-    }
-    if (nextIndex === maxIndex) {
-      return null;
-    }
-    return getNextImageIndex(
-      nextIndex,
-      enabledPoolIndexes,
-      maxIndex,
-      direction
-    );
-  };
+  // const getNextImageIndex = (
+  //   currentIndex: number,
+  //   enabledPoolIndexes: number[],
+  //   maxIndex: number,
+  //   direction: "previous" | "next"
+  // ) => {
+  //   let nextIndex = currentIndex;
+  //   if (direction === "next") {
+  //     nextIndex = currentIndex + 1;
+  //   } else {
+  //     nextIndex = currentIndex - 1;
+  //   }
+  //   console.log("nextIndex: ", nextIndex);
+  //   if (!enabledPoolIndexes.includes(nextIndex)) {
+  //     return nextIndex;
+  //   }
+  //   if (nextIndex === maxIndex) {
+  //     return null;
+  //   }
+  //   return getNextImageIndex(
+  //     nextIndex,
+  //     enabledPoolIndexes,
+  //     maxIndex,
+  //     direction
+  //   );
+  // };
   /* HELPERS*/
   /* 
   const navigateImage = (
@@ -212,15 +220,79 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
   };
   */
 
-  /* IMAGE STATUS RULES */
-  const getImageStatusAction = (
-    status: "enabled" | "disabled"
-  ): {
-    newStatus: "enabled" | "disabled";
-  } => {
-    return {
-      newStatus: status === "enabled" ? "disabled" : "enabled",
+  /* NAVIGATE IMAGE */
+  const getImageFromPool = (
+    wordId: string,
+    image: ImageType,
+    direction: "previous" | "next"
+  ): ImageType | null => {
+    const word = vocabWords.find((w) => w.id === wordId);
+    if (!word) return null;
+
+    // 2. Get current pool (images in use)
+    const currentPool = word.imageSlots
+      .filter((slot) => slot.status === "enabled" && slot.image)
+      .map((slot) => slot.image!);
+
+    // 3. Get external image pool
+    const pool = mockImagePool.find((pool) => pool.wordId === wordId);
+    if (!pool) return null;
+
+    const { imagePool } = pool;
+    // 4. Find current image in external pool
+    let currentIndex = 0;
+
+    if (image?.src) {
+      currentIndex = imagePool.findIndex(
+        (poolImage) => poolImage.src === image.src
+      );
+    }
+    if (currentIndex === -1) return null;
+
+    // 5. Look for next image that's NOT in current pool
+    const getNextImageIndex = (
+      currentIndex: number,
+      currentPool: ImageType[],
+      maxIndex: number,
+      direction: "previous" | "next"
+    ): number | null => {
+
+      let nextIndex = currentIndex;
+      if (direction === "next") {
+        nextIndex = currentIndex + 1;
+      } else {
+        nextIndex = currentIndex - 1;
+      }
+      if (nextIndex <= 0 || nextIndex >= maxIndex) {
+        return null;
+      }
+      if (!currentPool.some((image) => image.src === imagePool[nextIndex]?.src)) {
+        return nextIndex;
+      }
+      
+      return getNextImageIndex(
+        nextIndex,
+        currentPool,
+        maxIndex,
+        direction
+      );
     };
+
+    const nextImageIndex = getNextImageIndex(
+      currentIndex,
+      currentPool,
+      imagePool.length,
+      direction
+    );
+
+
+    if (nextImageIndex === null) {
+      console.log("No available image found, call API to refill pool");
+      return image;
+    }
+
+    return imagePool[nextImageIndex];
+
   };
 
   /* MANAGE IMAGE */
@@ -253,53 +325,78 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
 
     const requestData = prepareRequest(wordId, imageSlotId);
     if (requestData instanceof Error) return console.error(requestData.message);
-    const { word, imageSlot } = requestData.data;
+    const { imageSlot } = requestData.data;
+    let newData: Partial<ImageSlotType> | null = null;
 
     switch (action.type) {
       case "navigate":
         //navigateImage(word, imageSlot, action.direction);
+        const newImage = getImageFromPool(
+          wordId,
+          imageSlot.image as ImageType,
+          action.direction
+        );
 
-        //
+        if (newImage) {
+          newData = {
+            image: newImage,
+            status: "enabled",
+          };
+        }
+
         break;
       case "toggle":
-        //toggleImage(word, imageSlot);
-
-        // image staus rules
         if (imageSlot.status !== "enabled" && imageSlot.status !== "disabled")
           return;
-        const { newStatus } = getImageStatusAction(imageSlot.status);
 
-        const newData: Partial<ImageSlotType> = {
-          status: newStatus,
-        };
-
-        updateImage(word.id, imageSlot.id, newData);
-
+        if (imageSlot.status === "enabled") {
+          // Disabling - remove the image
+          newData = {
+            status: "disabled",
+            image: null,
+          };
+        } else {
+          // Enabling - need to get an image from the pool
+          const newImage = getImageFromPool(
+            wordId,
+            imageSlot.image as ImageType,
+            "next"
+          );
+          newData = {
+            status: "enabled",
+            image: newImage || imageSlot.image, // Use new image or keep existing
+          };
+        }
         break;
       default:
         throw new Error("Invalid action type");
     }
+
+    if (newData) {
+      updateImage(wordId, imageSlotId, newData);
+    }
   };
 
+  // const setImageSlots = (word: VocabularyWordType) => {
+  //   return word.imageSlots.map((imageSlot) => ({
+  //     ...imageSlot,
+  //     onImageClick: (action: ImageAction) =>
+  //       manageImage(word.id, imageSlot.id, action),
+  //     // image:
+  //     //   imageSlot.image === undefined
+  //     //     ? getImageFromPool(word.id, imageSlot.image as ImageType, "next")
+  //     //     : imageSlot.image,
+  //   }));
+  // };
 
-  const setImageSlots = (word: VocabularyWordType) => {
-    return word.imageSlots.map((imageSlot) => ({
-      ...imageSlot,
-      onImageClick: (action: ImageAction) =>
-        manageImage(word.id, imageSlot.id, action),
-      image:
-        imageSlot.image === undefined ? mockImagePool[2] : imageSlot.image,
-    }));
-  };
-
-  useEffect(() => {
-    setVocabWords(
-      vocabWords.map((word) => ({
-        ...word,
-        imageSlots: setImageSlots(word),
-      }))
-    );
-  }, []);
+  // useEffect(() => {
+  //   setVocabWords(
+  //     vocabWords.map((word) => ({
+  //       ...word,
+  //       imageSlots: setImageSlots(word),
+  //     }))
+  //   );
+  // }, []);
 
   return (
     <VocabularyContext.Provider
