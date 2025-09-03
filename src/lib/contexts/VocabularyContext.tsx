@@ -80,12 +80,12 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
     const pool = mockImagePool.find((pool) => pool.wordId === wordId);
     if (!pool) return null;
 
-    const { imagePool } = pool;
+    const { images } = pool;
     // 4. Find current image in external pool
     let currentIndex = 0;
 
     if (image?.src) {
-      currentIndex = imagePool.findIndex(
+      currentIndex = images.findIndex(
         (poolImage) => poolImage.src === image.src
       );
     }
@@ -108,7 +108,7 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
         return null;
       }
       if (
-        !currentPool.some((image) => image.src === imagePool[nextIndex]?.src)
+        !currentPool.some((image) => image.src === images[nextIndex]?.src)
       ) {
         return nextIndex;
       }
@@ -119,7 +119,7 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
     const nextImageIndex = getNextImageIndex(
       currentIndex,
       currentPool,
-      imagePool.length,
+      images.length,
       direction
     );
 
@@ -128,8 +128,8 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
       return image;
     }
 
-    return imagePool[nextImageIndex];
-  };
+    return images[nextImageIndex];
+  }; 
 
   /* MANAGE IMAGE */
   const manageImage = (
@@ -166,7 +166,6 @@ export function VocabularyProvider({ children }: { children: ReactNode }) {
 
     switch (action.type) {
       case "navigate":
-        //navigateImage(word, imageSlot, action.direction);
         const newImage = getImageFromPool(
           wordId,
           imageSlot.image as ImageType,

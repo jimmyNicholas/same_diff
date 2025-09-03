@@ -147,13 +147,13 @@ export const MockVocabularyProvider = ({
 
 interface ImagePoolType {
   wordId: string;
-  imagePool: ImageType[];
+  images: ImageType[];
 };
 
 export const mockImagePool: ImagePoolType[] = [
   {
     wordId: "1",
-    imagePool: [
+    images: [
       {
         id: "0",
         src: "/images/pug-1.jpg",
@@ -208,7 +208,7 @@ export const mockImagePool: ImagePoolType[] = [
   },
   {
     wordId: "2",
-    imagePool: [
+    images: [
       {
         id: "0",
         src: "/images/golden-retriever-1.jpg",
@@ -233,7 +233,7 @@ export const mockImagePool: ImagePoolType[] = [
   },
   {
     wordId: "3",
-    imagePool: [
+    images: [
       {
         id: "0",
         src: "/images/border-collie-1.jpg",
