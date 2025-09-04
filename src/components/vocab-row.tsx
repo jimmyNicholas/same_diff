@@ -3,6 +3,8 @@ import { Input } from "./ui/input";
 import PictureContainer from "./ui/picture-container";
 import { useState } from "react";
 import { ImageAction, useVocabulary } from "@/lib/contexts/VocabularyContext";
+import useItemPool from "@/lib/hooks/useItemPool";
+import { ImageType } from "@/lib/types";
 
 interface VocabRowProps {
   vocabulary: VocabularyWordType;
@@ -10,16 +12,18 @@ interface VocabRowProps {
 
 const VocabRow = ({ vocabulary }: VocabRowProps) => {
   const [inputValue, setInputValue] = useState(vocabulary.word);
-  const { addWord, manageImage } = useVocabulary();
+  const { addWord } = useVocabulary();
   const handleOnBlur = () => {
     addWord(inputValue);
   };
 
-  const imageSlots = vocabulary.imageSlots.map((imageSlot) => ({
-    imageSlot,
-    onImageClick: (action: ImageAction) =>
-      manageImage(vocabulary.id, imageSlot.id, action),
-  }));
+  // const imageSlots = vocabulary.imageSlots.map((imageSlot) => ({
+  //   imageSlot,
+  //   onImageClick: (action: ImageAction) =>
+  //     manageImage(vocabulary.id, imageSlot.id, action),
+  // }));
+
+  const { manageItemPool, getSelectedImages } = useItemPool<ImageType>(vocabulary.word);
 
   return (
     <div className="flex flex-row gap-2 border-gray-200 border-2 rounded-md p-2 items-center">
@@ -32,7 +36,8 @@ const VocabRow = ({ vocabulary }: VocabRowProps) => {
       />
       <div className="overflow-x-auto w-full">
         <PictureContainer
-          imageSlots={imageSlots}
+          images={getSelectedImages() as ImageType[]}
+          manageItemPool={manageItemPool}
           data-testid="picture-container"
         />
       </div>

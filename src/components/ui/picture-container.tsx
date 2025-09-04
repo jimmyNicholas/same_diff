@@ -1,23 +1,22 @@
-import { ImageAction } from "@/lib/contexts/VocabularyContext";
 import Picture from "./picture";
-import { ImageSlotType } from "@/lib/types";
+import { ImageType } from "@/lib/types";
+import { ItemAction } from "@/lib/hooks/useItemPool";
 
 interface PictureContainerProps {
   /** Array of image slots to display */
-  imageSlots: {
-    imageSlot: ImageSlotType;
-    onImageClick: (action: ImageAction) => void;
-  }[];
+  images: ImageType[];
+  manageItemPool: (action: ItemAction, imageId: string) => void;
 }
 
-const PictureContainer = ({ imageSlots }: PictureContainerProps) => {
+const PictureContainer = ({ images, manageItemPool }: PictureContainerProps) => {
+
   return (
     <div
       data-testid="picture-container"
       className="flex flex-wrap justify-around gap-2"
     >
-      {imageSlots.map((imageSlot, index) => (
-        <Picture key={index} imageSlot={imageSlot.imageSlot} onImageClick={imageSlot.onImageClick} />
+      {images.map((image, index) => (
+        <Picture key={index} image={image} onImageClick={(action) => manageItemPool(action, image.id)} />
       ))}
     </div>
   );

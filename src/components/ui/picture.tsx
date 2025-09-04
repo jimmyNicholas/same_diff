@@ -1,16 +1,16 @@
 //import { Button } from "./button";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Loader, Plus, X } from "lucide-react";
-import { ImageSlotType } from "@/lib/types";
-import { ImageAction } from "@/lib/contexts/VocabularyContext";
+import { ImageType } from "@/lib/types";
+import { ItemAction } from "@/lib/hooks/useItemPool";
 
 export interface PicturePropsType {
-  imageSlot: ImageSlotType;
-  onImageClick: (action: ImageAction) => void;
+  image: ImageType;
+  onImageClick: (action: ItemAction) => void;
 }
 
-const Picture = ({ imageSlot, onImageClick }: PicturePropsType) => {
-  const { id, status, image } = imageSlot;
+const Picture = ({ image, onImageClick }: PicturePropsType) => {
+  const { id } = image;
 
   // default size is md
   const pictureWidth = 150;
@@ -18,7 +18,7 @@ const Picture = ({ imageSlot, onImageClick }: PicturePropsType) => {
 
   return (
     <div key={id}>
-      {status === "enabled" && image ? (
+      {image ? (
         <div
           className="relative rounded-md"
           style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
@@ -37,7 +37,7 @@ const Picture = ({ imageSlot, onImageClick }: PicturePropsType) => {
             <button
               aria-label="Close this image"
               className="bg-destructive/70 rounded-full"
-              onClick={() => onImageClick({ type: "toggle" })}
+              onClick={() => onImageClick("delete")}
             >
               <X
                 style={{
@@ -54,7 +54,7 @@ const Picture = ({ imageSlot, onImageClick }: PicturePropsType) => {
             <button
               aria-label="Previous image"
               className="bg-secondary/70 rounded-full"
-              onClick={() => onImageClick({ type: "navigate", direction: "previous" })}
+              onClick={() => onImageClick("prev")}
             >
               <ChevronLeft
                 style={{
@@ -71,7 +71,7 @@ const Picture = ({ imageSlot, onImageClick }: PicturePropsType) => {
             <button
               aria-label="Next image"
               className="bg-secondary/70 rounded-full"
-              onClick={() => onImageClick({ type: "navigate", direction: "next" })}
+              onClick={() => onImageClick("next")}
             >
               <ChevronRight
                 style={{
@@ -84,21 +84,22 @@ const Picture = ({ imageSlot, onImageClick }: PicturePropsType) => {
           </div>
         </div>
       ) : (
-        <div
-          className="flex items-center justify-center border rounded-md cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
-          style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
-          onClick={
-            status === "loading"
-              ? undefined
-              : () => onImageClick({ type: "toggle" })
-          }
-        >
-          {status === "loading" ? (
-            <Loader className="w-full h-full animate-pulse" />
-          ) : (
-            <Plus className="w-full h-full" />
-          )}
-        </div>
+        // <div
+        //   className="flex items-center justify-center border rounded-md cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
+        //   style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
+        //   onClick={
+        //     status === "loading"
+        //       ? undefined
+        //       : () => onImageClick({ type: "toggle" })
+        //   }
+        // >
+        //   {status === "loading" ? (
+        //     <Loader className="w-full h-full animate-pulse" />
+        //   ) : (
+        //     <Plus className="w-full h-full" />
+        //   )}
+        // </div>
+        null
       )}
     </div>
   );
