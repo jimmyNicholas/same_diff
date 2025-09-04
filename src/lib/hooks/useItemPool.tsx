@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 
-export type ItemAction = "next" | "prev" | "delete";
+export type ManageItemPoolAction = "next" | "prev" | "add" | "delete";
 
 interface ItemPoolType<T> {
   id: string;
@@ -43,17 +43,11 @@ function useItemPool<T>(
     [itemPool.items.length]
   );
 
-  useEffect(() => {
-    if (itemPool.items.length === 0) {
-      fillPool();
-    }
-  }, []); // Empty dependency array
-
   const getSelectedImages = useCallback(() => {
     return selectedIndexes.map((index) => itemPool.items[index] as T);
   }, [itemPool.items, selectedIndexes]);
 
-  const fillPool = useCallback( () => {
+  const fillPool = useCallback(() => {
     const newItems = getNewItems(itemPool.tag, itemPool.size || 5).map(
       (item) => item as T
     );
@@ -111,30 +105,28 @@ function useItemPool<T>(
     [itemPool.items.length]
   );
 
-  const manageItemPool = useCallback(
-    (action: "next" | "prev" | "delete", itemId: string) => {
+  const navigateItemPool = useCallback(
+    (action: "next" | "prev", itemId: string) => {
       console.log("manageItemPool", action, itemId);
       console.log("itemPool", itemPool.items);
-      if (action === "delete") {
-        setSelectedIndexes(prev => prev.filter((i) => i !== getItemIndex(itemId)));
-      }
+
       const currentIndex = getItemIndex(itemId) || 0;
-      console.log("currentIndex", currentIndex);
       const mod = action === "next" ? 1 : action === "prev" ? -1 : 0;
       const newIndex = findNewIndex(mod, currentIndex, selectedIndexes);
 
-      let newItem = getItem(currentIndex) as T;
-      if (newIndex !== currentIndex) {
-        newItem = getItem(newIndex) as T;
-        if (newIndex === itemPool.items.length) {
-          newItem = fillPool() as T;
-        }
-        setSelectedIndexes(prev =>
-            prev.map((i) => (i === currentIndex ? newIndex : i))
-          );
+      let newItem = null;
+
+      newItem = getItem(newIndex);
+      if (newIndex === itemPool.items.length) {
+        newItem = fillPool();
       }
-      console.log("newItem", newItem, "newIndex", newIndex, 'itemPool.items.length', itemPool.items.length);
-      return newItem;
+      setSelectedIndexes((prev) =>
+        prev.map((i) => (i === currentIndex ? newIndex : i))
+      );
+
+      console.log("selectedIndexes", selectedIndexes);
+      console.log("newItem", newItem);
+      return newItem || (getItem(currentIndex) as T);
     },
     [
       getItemIndex,
@@ -142,11 +134,63 @@ function useItemPool<T>(
       getItem,
       fillPool,
       selectedIndexes,
-      itemPool.items
+      itemPool.items,
     ]
   );
 
-  return { manageItemPool, getSelectedImages };
+  const updateItemPool = useCallback(
+    (action: "add" | "delete", itemId?: string) => {
+      if (action === "add") {
+        const highestSelectedIndex = Math.max(...selectedIndexes);
+        const nextIndex = highestSelectedIndex + 1;
+
+        // Ensure we have enough items in the pool
+        if (nextIndex >= itemPool.items.length) {
+          fillPool();
+        }
+
+        setSelectedIndexes((prev) => [...prev, nextIndex]);
+      } else if (action === "delete") {
+        if (!itemId) { return; }
+        const index = getItemIndex(itemId);
+        if (index === -1) {
+          return;
+        }
+        setSelectedIndexes((prev) => prev.filter((i) => i !== index));
+      }
+    },
+    [selectedIndexes, fillPool, itemPool.items.length, getItemIndex]
+  );
+
+  const manageItemPool = useCallback(
+    (action: "add" | "delete" | "next" | "prev", itemId?: string) => {
+      switch (action) {
+        case "add":
+          updateItemPool("add");
+          break;
+        case "delete":
+          updateItemPool("delete", itemId);
+          break;
+        case "next":
+          if (!itemId) {
+            return;
+          }
+          navigateItemPool("next", itemId);
+          break;
+        case "prev":
+          if (!itemId) {
+            return;
+          }
+          navigateItemPool("prev", itemId);
+          break;
+        default:
+          break;
+      }
+    },
+    [updateItemPool, navigateItemPool]
+  );
+
+  return { getSelectedImages, manageItemPool };
 }
 
 export default useItemPool;

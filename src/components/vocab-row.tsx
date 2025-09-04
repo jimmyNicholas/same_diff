@@ -2,7 +2,7 @@ import { VocabularyWordType } from "@/lib/types";
 import { Input } from "./ui/input";
 import PictureContainer from "./ui/picture-container";
 import { useState } from "react";
-import { ImageAction, useVocabulary } from "@/lib/contexts/VocabularyContext";
+import { useVocabulary } from "@/lib/contexts/VocabularyContext";
 import useItemPool from "@/lib/hooks/useItemPool";
 import { ImageType } from "@/lib/types";
 
@@ -41,6 +41,7 @@ const VocabRow = ({ vocabulary }: VocabRowProps) => {
           data-testid="picture-container"
         />
       </div>
+      <button onClick={() => manageItemPool("add")}>Add</button>
     </div>
   );
 };

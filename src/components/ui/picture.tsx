@@ -2,19 +2,19 @@
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Loader, Plus, X } from "lucide-react";
 import { ImageType } from "@/lib/types";
-import { ItemAction } from "@/lib/hooks/useItemPool";
+import { ManageItemPoolAction } from "@/lib/hooks/useItemPool";
 
 export interface PicturePropsType {
   image: ImageType;
-  onImageClick: (action: ItemAction) => void;
+  onImageClick: (action: ManageItemPoolAction) => void;
 }
 
 const Picture = ({ image, onImageClick }: PicturePropsType) => {
   const { id } = image;
 
   // default size is md
-  const pictureWidth = 150;
-  const pictureHeight = 150;
+  const pictureWidth = 100;
+  const pictureHeight = 100;
 
   return (
     <div key={id}>
