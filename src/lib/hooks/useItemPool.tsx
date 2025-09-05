@@ -1,26 +1,30 @@
 import { useState, useCallback } from "react";
 
-export type ManageItemPoolAction = "next" | "prev" | "add" | "delete";
-
 interface ItemPoolType<T> {
   id: string;
   tag: string;
   items: T[];
-  size?: number;
-  selectedSize?: number;
+  poolChunkSize: number;
+  selectedSize: number;
 }
+
+export type ItemPoolAction =
+| { type: "ADD" }
+| { type: "DELETE"; payload: { itemId: string } }
+| { type: "NEXT"; payload: { itemId: string } }
+| { type: "PREV"; payload: { itemId: string } };
 
 function useItemPool<T>(
   tag: string,
   currentItems: T[] = [],
-  size: number = 5,
+  poolChunkSize: number = 5,
   selectedSize: number = 3
 ) {
   const [itemPool, setItemPool] = useState<ItemPoolType<T>>({
     id: tag,
     tag,
     items: currentItems,
-    size: size || 5,
+    poolChunkSize: poolChunkSize || 5,
     selectedSize: selectedSize || 3,
   });
 
@@ -48,7 +52,7 @@ function useItemPool<T>(
   }, [itemPool.items, selectedIndexes]);
 
   const fillPool = useCallback(() => {
-    const newItems = getNewItems(itemPool.tag, itemPool.size || 5).map(
+    const newItems = getNewItems(itemPool.tag, itemPool.poolChunkSize).map(
       (item) => item as T
     );
 
@@ -57,7 +61,7 @@ function useItemPool<T>(
       items: [...prev.items, ...newItems],
     }));
     return newItems[0] as T;
-  }, [itemPool.tag, itemPool.size, getNewItems]);
+  }, [itemPool.tag, itemPool.poolChunkSize, getNewItems]);
 
   if (itemPool.items.length === 0) {
     fillPool();
@@ -106,16 +110,10 @@ function useItemPool<T>(
   );
 
   const navigateItemPool = useCallback(
-    (action: "next" | "prev", itemId: string) => {
-      console.log("manageItemPool", action, itemId);
-      console.log("itemPool", itemPool.items);
-
-      const currentIndex = getItemIndex(itemId) || 0;
-      const mod = action === "next" ? 1 : action === "prev" ? -1 : 0;
-      const newIndex = findNewIndex(mod, currentIndex, selectedIndexes);
+    (currentIndex: number, modifier: number = 1) => {
+      const newIndex = findNewIndex(modifier, currentIndex, selectedIndexes);
 
       let newItem = null;
-
       newItem = getItem(newIndex);
       if (newIndex === itemPool.items.length) {
         newItem = fillPool();
@@ -129,7 +127,6 @@ function useItemPool<T>(
       return newItem || (getItem(currentIndex) as T);
     },
     [
-      getItemIndex,
       findNewIndex,
       getItem,
       fillPool,
@@ -138,56 +135,43 @@ function useItemPool<T>(
     ]
   );
 
-  const updateItemPool = useCallback(
-    (action: "add" | "delete", itemId?: string) => {
-      if (action === "add") {
-        const highestSelectedIndex = Math.max(...selectedIndexes);
-        const nextIndex = highestSelectedIndex + 1;
+  const addItem = useCallback(() => {
+    const highestSelectedIndex = Math.max(...selectedIndexes);
+    const nextIndex = highestSelectedIndex + 1;
 
-        // Ensure we have enough items in the pool
-        if (nextIndex >= itemPool.items.length) {
-          fillPool();
-        }
-
-        setSelectedIndexes((prev) => [...prev, nextIndex]);
-      } else if (action === "delete") {
-        if (!itemId) { return; }
-        const index = getItemIndex(itemId);
-        if (index === -1) {
-          return;
-        }
-        setSelectedIndexes((prev) => prev.filter((i) => i !== index));
-      }
-    },
-    [selectedIndexes, fillPool, itemPool.items.length, getItemIndex]
-  );
+    // Ensure we have enough items in the pool
+    if (nextIndex >= itemPool.items.length) {
+      fillPool();
+    }
+    setSelectedIndexes((prev) => [...prev, nextIndex]);
+  }, [selectedIndexes, fillPool, itemPool.items.length]);
 
   const manageItemPool = useCallback(
-    (action: "add" | "delete" | "next" | "prev", itemId?: string) => {
-      switch (action) {
-        case "add":
-          updateItemPool("add");
+    (action: ItemPoolAction) => {
+      const { type } = action;
+      let index = 0;
+      if ("payload" in action) {
+        index = getItemIndex(action.payload.itemId);
+        if (index === -1) { return };
+      }
+      switch (type) {
+        case "ADD":
+          addItem();
           break;
-        case "delete":
-          updateItemPool("delete", itemId);
+        case "DELETE": 
+          setSelectedIndexes((prev) => prev.filter((i) => i !== index));
           break;
-        case "next":
-          if (!itemId) {
-            return;
-          }
-          navigateItemPool("next", itemId);
+        case "NEXT":
+          navigateItemPool(index, 1);
           break;
-        case "prev":
-          if (!itemId) {
-            return;
-          }
-          navigateItemPool("prev", itemId);
+        case "PREV":
+          navigateItemPool(index, -1);
           break;
         default:
           break;
       }
     },
-    [updateItemPool, navigateItemPool]
+    [addItem, getItemIndex, navigateItemPool]
   );
 
   return { getSelectedImages, manageItemPool };
