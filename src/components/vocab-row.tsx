@@ -3,25 +3,29 @@ import PictureContainer from "./ui/picture-container";
 import { useState } from "react";
 import useItemPool from "@/lib/hooks/useItemPool";
 import { ImageType, VocabularyWordType } from "@/lib/types";
-import useVocabulary from "@/lib/hooks/useVocabulary";
+import { VocabularyAction } from "@/lib/hooks/useVocabulary";
 
 interface VocabRowContainerProps {
   vocabularyWords: VocabularyWordType[];
-  addWord: (word: string) => void;
+  manageVocabulary: (action: VocabularyAction) => void;
 }
 
 const VocabRowContainer = ({
   vocabularyWords,
-  addWord,
+  manageVocabulary,
 }: VocabRowContainerProps) => {
   const [inputValue, setInputValue] = useState("");
+
   const handleAddWord = () => {
-    //validate input
     if (inputValue.trim() === "") {
       return;
     }
-    addWord(inputValue);
+    manageVocabulary({ type: "ADD", payload: { word: inputValue } });
     setInputValue("");
+  };
+
+  const onManageVocabulary = (action: VocabularyAction) => {
+    manageVocabulary(action);
   };
 
   return (
@@ -39,9 +43,15 @@ const VocabRowContainer = ({
           Add New Word
         </button>
       </div>
-      {vocabularyWords.map((vocabularyWord) => (
-        <VocabRow key={vocabularyWord.id} vocabulary={vocabularyWord} />
-      ))}
+      <div className="grid grid-cols-2 gap-2">
+        {vocabularyWords.map((vocabularyWord) => (
+          <VocabRow
+            key={vocabularyWord.id}
+            vocabulary={vocabularyWord}
+            onManageVocabulary={onManageVocabulary}
+          />
+        ))}
+      </div>
     </div>
   );
 };
@@ -50,30 +60,46 @@ export default VocabRowContainer;
 
 interface VocabRowProps {
   vocabulary: VocabularyWordType;
+  onManageVocabulary: (action: VocabularyAction) => void;
 }
 
-const VocabRow = ({ vocabulary }: VocabRowProps) => {
+const VocabRow = ({ vocabulary, onManageVocabulary }: VocabRowProps) => {
   const [inputValue, setInputValue] = useState(vocabulary.word);
-  const { addWord } = useVocabulary([vocabulary]);
-  const handleOnBlur = () => {
-    addWord(inputValue);
+
+  const onHandleUpdateWord = () => {
+    if (inputValue.trim() === "") {
+      return;
+    }
+    onManageVocabulary({ type: "UPDATE", payload: { id: vocabulary.id, word: inputValue } });
   };
 
   const { manageItemPool, getSelectedImages } = useItemPool<ImageType>(
-    vocabulary.word, vocabulary.images
+    vocabulary.word,
+    vocabulary.images
   );
 
   return (
-    <div className="flex flex-row gap-2 border-foreground border-2 rounded-md p-2 items-center">
-      <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 border-foreground border-2 rounded-md p-2 items-center">
+      <div className="flex flex-row gap-2">
         <Input
           value={inputValue}
+          onBlur={onHandleUpdateWord}
           onChange={(e) => setInputValue(e.target.value)}
-          onBlur={handleOnBlur}
           className="w-44 flex-shrink-0"
           data-testid="vocab-row-input"
         />
-        <button className="bg-accent text-accent-foreground px-4 py-2 rounded-md" onClick={() => manageItemPool({ type: "ADD" })}>Add Image</button>
+        <button
+          className="bg-secondary text-secondary-foreground px-4 py-2 rounded-md"
+          onClick={() => manageItemPool({ type: "ADD" })}
+        >
+          Add Image
+        </button>
+        <button
+          className="bg-destructive/25 text-destructive px-4 py-2 rounded-md"
+          onClick={() => onManageVocabulary({ type: "DELETE", payload: { id: vocabulary.id } })}
+        >
+          Delete Word
+        </button>
       </div>
       <div className="overflow-x-auto w-full">
         <PictureContainer

@@ -1,4 +1,14 @@
-export const mockImagePool = [
+export const mockImagePoolApiCall = async (tag: string, page: number, chunkSize: number) => {
+    console.log("mockImagePoolApiCall", tag, page, chunkSize);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const response = {
+        success: true,
+        images: mockImagePoolApiResponse,
+    }
+    return response;
+}
+
+const mockImagePoolApiResponse = [
     {
       id: 'md2_P9X7t4M',
       slug: 'close-up-photography-of-adult-brown-and-white-border-collie-md2_P9X7t4M',

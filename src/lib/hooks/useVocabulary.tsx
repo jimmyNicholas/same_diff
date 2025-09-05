@@ -25,23 +25,52 @@ export const mockVocabularyWords: VocabularyWordType[] = [
   },
 ];
 
-function useVocabulary(currentWords: VocabularyWordType[] = mockVocabularyWords) {
-  const [words, setWords] = useState<VocabularyWordType[]>(currentWords);
+export type VocabularyAction =
+  | { type: "ADD"; payload: { word: string } }
+  | { type: "UPDATE"; payload: { id: string; word: string } }
+  | { type: "DELETE"; payload: { id: string } };
+
+function useVocabulary(
+  currentWords: VocabularyWordType[] = mockVocabularyWords
+) {
+  const [words, setWords] = useState<VocabularyWordType[]>(currentWords);  
 
   // create
   // addWord(word: string)
   const addWord = (word: string) => {
     console.log("addWord called for word: ", word);
+    const newWord = {
+      id: words.length + 1,
+      word,
+      definition: "",
+      images: [],
+      createdAt: new Date(),
+    };
+    setWords([...words, newWord] as VocabularyWordType[]);
   };
 
-  // props (action: string, payload {})
-  const manageVocabulary = () => {
-    // add word = (word: 'string') -> creates new { VocabWord }, adds to vocabulary words
-    // update word = (id: 'string', 'new word')
-    // deleye word = (id: 'string') 
-  }
+  const manageVocabulary = (action: VocabularyAction) => {
+    const { type } = action;
+    switch (type) {
+      case "ADD":
+        addWord(action.payload.word);
+        break;
+      case "UPDATE":
+        setWords((prevWords) =>
+          prevWords.map((word) =>
+            word.id === action.payload.id
+              ? { ...word, word: action.payload.word }
+              : word
+          )
+        );
+        break;
+      case "DELETE":
+        setWords(words.filter((word) => word.id !== action.payload.id));
+        break;
+    }
+  };
 
-  return { words, addWord };
+  return { words, manageVocabulary };
 }
 
 export default useVocabulary;

@@ -2,15 +2,14 @@
 // ===== DOMAIN TYPES =====
 export interface ImageType {
   id: string;
-  src: string;
+  urls: {
+    thumb: string;
+    small: string;
+    regular: string;
+    full: string;
+  };
   alt: string;
 }
-
-// export interface ImageSlotType {
-//   id: string;  
-//   status: "loading" | "error";
-//   image: ImageType | null;
-// }
 
 export interface VocabularyWordType {
   id: string;

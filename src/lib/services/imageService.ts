@@ -33,7 +33,7 @@ class ImageService {
   /**
    * Search for images for a single term
    */
-  async searchSingle(query: string, maxImages: number = 4): Promise<ImageSearchResult> {
+  async searchSingle(query: string, page: number = 1, maxImages: number = 5): Promise<ImageSearchResult> {
     if (!this.isConfigured()) {
       return {
         query,
@@ -47,6 +47,7 @@ class ImageService {
       const params = new URLSearchParams({
         client_id: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY || '',
         query: query.trim(),
+        page: page.toString(),
         per_page: maxImages.toString(),
         content_filter: 'high',
       });
@@ -81,7 +82,7 @@ class ImageService {
   /**
    * Search for images for multiple terms
    */
-  async searchBatch(queries: string[], maxImagesPerQuery: number = 4): Promise<BatchImageSearchResult> {
+  async searchBatch(queries: string[], page: number = 1, maxImagesPerQuery: number = 5): Promise<BatchImageSearchResult> {
     if (!this.isConfigured()) {
       return {
         results: queries.map(query => ({
@@ -102,7 +103,7 @@ class ImageService {
 
     // Process queries sequentially to avoid rate limiting
     for (const query of queries) {
-      const result = await this.searchSingle(query, maxImagesPerQuery);
+      const result = await this.searchSingle(query, page, maxImagesPerQuery);
       results.push(result);
       
       if (result.success) {
