@@ -5,12 +5,12 @@ export const useImageSearch = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const searchSingle = useCallback(async (query: string, maxImages: number = 4): Promise<ImageSearchResult> => {
+  const searchSingle = useCallback(async (query: string, page: number = 1, maxImages: number = 5): Promise<ImageSearchResult> => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const result = await imageService.searchSingle(query, maxImages);
+      const result = await imageService.searchSingle(query, page, maxImages);
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
@@ -26,12 +26,12 @@ export const useImageSearch = () => {
     }
   }, []);
 
-  const searchBatch = useCallback(async (queries: string[], maxImagesPerQuery: number = 4): Promise<BatchImageSearchResult> => {
+  const searchBatch = useCallback(async (queries: string[], page: number = 1, maxImagesPerQuery: number = 5): Promise<BatchImageSearchResult> => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const result = await imageService.searchBatch(queries, maxImagesPerQuery);
+      const result = await imageService.searchBatch(queries, page, maxImagesPerQuery);
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';

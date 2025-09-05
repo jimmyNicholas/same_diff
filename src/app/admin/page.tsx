@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useVocabulary } from '@/lib/contexts/VocabularyContext';
 
 export default function AdminPage() {
   const router = useRouter();

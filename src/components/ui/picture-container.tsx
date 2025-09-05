@@ -1,32 +1,28 @@
 import Picture from "./picture";
-import { PictureProps } from "./picture"
+import { ImageType } from "@/lib/types";
+import { ItemPoolAction } from "@/lib/hooks/useItemPool";
 
 interface PictureContainerProps {
-  /** Array of pictures to display */
-  pictures: PictureProps[];
+  images: ImageType[];
+  manageItemPool: (
+    action: ItemPoolAction,
+  ) => void;
 }
 
 const PictureContainer = ({
-  pictures,
+  images,
+  manageItemPool,
 }: PictureContainerProps) => {
-  //const sortedPictures = pictures;
-  const sortedPictures = pictures.sort((a, b) => {
-    if (a.status === "enabled" && b.status !== "enabled") return -1;
-    if (a.status !== "enabled" && b.status === "enabled") return 1;
-    if (a.status === "loading" && b.status !== "loading") return -1;
-    if (a.status !== "loading" && b.status === "loading") return 1;
-    return 0;
-  });
-
   return (
     <div
       data-testid="picture-container"
       className="flex flex-wrap justify-around gap-2"
     >
-      {sortedPictures.map((picture, index) => (
+      {images.map((image, index) => (
         <Picture
           key={index}
-          {...picture}
+          image={image}
+          onImageClick={manageItemPool}
         />
       ))}
     </div>
