@@ -80,7 +80,8 @@ const VocabRow = ({ vocabulary, onManageVocabulary }: VocabRowProps) => {
 
   return (
     <div className="flex flex-col gap-2 border-foreground border-2 rounded-md p-2 items-center">
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-row gap-2 items-center">
+        <label htmlFor="vocab-row-input">{'Word: '}</label>
         <Input
           value={inputValue}
           onBlur={onHandleUpdateWord}

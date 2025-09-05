@@ -53,10 +53,14 @@ function useItemPool<T>(
   const getNewItems = useCallback(
     async (tag: string, page: number, chunkSize: number) => {
       try {
-        //const result = await searchSingle(tag, page, chunkSize);
-        const result = await mockImagePoolApiCall(tag, page, chunkSize);
+        const mock = true;
+        let result = null;
+        if (mock) {
+          result = await mockImagePoolApiCall(tag, page, chunkSize);
+        } else {
+          result = await searchSingle(tag, page, chunkSize);
+        }
         if (result.success && result.images.length > 0) { incrementPage(); }
-        console.log("result", result);
         return result.images.map((img) => ({
           id: img.id,
           urls: img.urls,
@@ -67,7 +71,7 @@ function useItemPool<T>(
         return [];
       }
     },
-    [incrementPage]
+    [incrementPage, searchSingle]
   );
 
   const getSelectedImages = useCallback(() => {
