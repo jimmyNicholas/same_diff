@@ -1,10 +1,10 @@
 "use client";
 
 import VocabRowContainer from "@/components/vocab-row";
-import useVocabulary, { mockVocabularyWords } from "@/lib/hooks/useVocabulary";
+import useVocabulary from "@/lib/hooks/useVocabulary";
 
 const AdminActivities = () => {
-  const { words, manageVocabulary } = useVocabulary(mockVocabularyWords);
+  const { words, manageVocabulary } = useVocabulary();
   return (
     <div>
       
