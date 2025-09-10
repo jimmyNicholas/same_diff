@@ -20,7 +20,7 @@ const VocabRowContainer = ({
     if (inputValue.trim() === "") {
       return;
     }
-    manageVocabulary({ type: "ADD", payload: { word: inputValue } });
+    manageVocabulary({ type: "ADD_WORD", payload: { word: inputValue } });
     setInputValue("");
   };
 
@@ -70,12 +70,12 @@ const VocabRow = ({ vocabulary, onManageVocabulary }: VocabRowProps) => {
     if (inputValue.trim() === "") {
       return;
     }
-    onManageVocabulary({ type: "UPDATE", payload: { id: vocabulary.id, word: inputValue } });
+    onManageVocabulary({ type: "UPDATE_WORD", payload: { id: vocabulary.id, word: inputValue } });
   };
 
   const { manageItemPool, getSelectedImages } = useItemPool<ImageType>(
     vocabulary.word,
-    vocabulary.images
+    vocabulary.images,
   );
 
   return (
@@ -97,7 +97,7 @@ const VocabRow = ({ vocabulary, onManageVocabulary }: VocabRowProps) => {
         </button>
         <button
           className="bg-destructive/25 text-destructive px-4 py-2 rounded-md"
-          onClick={() => onManageVocabulary({ type: "DELETE", payload: { id: vocabulary.id } })}
+          onClick={() => onManageVocabulary({ type: "DELETE_WORD", payload: { id: vocabulary.id } })}
         >
           Delete Word
         </button>
@@ -105,7 +105,7 @@ const VocabRow = ({ vocabulary, onManageVocabulary }: VocabRowProps) => {
       <div className="overflow-x-auto w-full">
         <PictureContainer
           images={getSelectedImages() as ImageType[]}
-          manageItemPool={manageItemPool}
+          manageImage={manageItemPool}
           data-testid="picture-container"
         />
       </div>

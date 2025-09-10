@@ -4,15 +4,21 @@ import { ItemPoolAction } from "@/lib/hooks/useItemPool";
 
 interface PictureContainerProps {
   images: ImageType[];
-  manageItemPool: (
+  manageImage: (
     action: ItemPoolAction,
   ) => void;
 }
 
 const PictureContainer = ({
   images,
-  manageItemPool,
+  manageImage,
 }: PictureContainerProps) => {
+
+  const onImageClick = (type: string, imageId: string) => {
+    const action = { type, payload: { itemId: imageId } };
+    manageImage(action as ItemPoolAction);
+  };
+
   return (
     <div
       data-testid="picture-container"
@@ -22,7 +28,7 @@ const PictureContainer = ({
         <Picture
           key={index}
           image={image}
-          onImageClick={manageItemPool}
+          onImageClick={onImageClick}
         />
       ))}
     </div>

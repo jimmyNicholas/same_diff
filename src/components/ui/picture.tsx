@@ -2,11 +2,10 @@
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Loader2, X } from "lucide-react";
 import { ImageType } from "@/lib/types";
-import { ItemPoolAction } from "@/lib/hooks/useItemPool";
 
 export interface PicturePropsType {
   image: ImageType;
-  onImageClick: (action: ItemPoolAction) => void;
+  onImageClick: (type: string, imageId: string) => void;
 }
 
 const Picture = ({ image, onImageClick }: PicturePropsType) => {
@@ -48,7 +47,7 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
             aria-label="Close this image"
             className="bg-destructive/70 rounded-full"
             onClick={() =>
-              onImageClick({ type: "DELETE", payload: { itemId: image.id } })
+              onImageClick("DELETE", image.id)
             }
           >
             <X
@@ -67,7 +66,7 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
             aria-label="Previous image"
             className="bg-secondary/70 rounded-full"
             onClick={() =>
-              onImageClick({ type: "PREV", payload: { itemId: image.id } })
+              onImageClick("PREV", image.id)
             }
           >
             <ChevronLeft
@@ -86,7 +85,7 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
             aria-label="Next image"
             className="bg-secondary/70 rounded-full"
             onClick={() =>
-              onImageClick({ type: "NEXT", payload: { itemId: image.id } })
+              onImageClick("NEXT", image.id)
             }
           >
             <ChevronRight

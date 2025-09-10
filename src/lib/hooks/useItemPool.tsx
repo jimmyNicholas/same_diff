@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from "react";
-//import { mockImagePoolApiResponse } from '@/test-utils/MockImagePool';
 import { useImageSearch } from './useImageSearch';
 import { mockImagePoolApiCall } from "@/test-utils/MockImagePool";
 
@@ -49,7 +48,7 @@ function useItemPool<T>(
     }));
   }, []);
 
-  // mock API call
+  // should be given by the caller
   const getNewItems = useCallback(
     async (tag: string, page: number, chunkSize: number) => {
       try {
@@ -170,8 +169,6 @@ function useItemPool<T>(
         prev.map((i) => (i === currentIndex ? newIndex : i))
       );
 
-      console.log("selectedIndexes", selectedIndexes);
-      console.log("newItem", newItem);
       return newItem || (getItem(currentIndex) as T);
     },
     [
