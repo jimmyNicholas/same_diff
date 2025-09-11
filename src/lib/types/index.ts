@@ -11,12 +11,24 @@ export interface ImageType {
   alt: string;
 }
 
+export interface ImagePoolType {
+  id: string;
+  tag: string;
+  pool: ImageType[];
+  selectedIndexes: number[];
+  currentPage: number;
+  poolChunkSize: number;
+  selectedSize: number;
+  isLoading: boolean;
+}
+
 export interface VocabularyWordType {
   id: string;
   word: string;
   definition: string;
   images: ImageType[];
-  createdAt: Date;
+  imagePool?: ImagePoolType;
+  createdAt: string;
 }
 
 // ===== ADMIN TYPES =====

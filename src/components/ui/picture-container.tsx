@@ -1,11 +1,11 @@
 import Picture from "./picture";
 import { ImageType } from "@/lib/types";
-import { ItemPoolAction } from "@/lib/hooks/useItemPool";
 
 interface PictureContainerProps {
   images: ImageType[];
   manageImage: (
-    action: ItemPoolAction,
+    action: "DELETE"| "NEXT" | "PREV",
+    itemId: string,
   ) => void;
 }
 
@@ -15,8 +15,7 @@ const PictureContainer = ({
 }: PictureContainerProps) => {
 
   const onImageClick = (type: string, imageId: string) => {
-    const action = { type, payload: { itemId: imageId } };
-    manageImage(action as ItemPoolAction);
+    manageImage(type as "DELETE"| "NEXT" | "PREV", imageId);
   };
 
   return (
