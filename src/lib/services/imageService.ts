@@ -4,6 +4,7 @@ const UNSPLASH_API_BASE_URL = 'https://api.unsplash.com';
 export interface UnsplashImage {
   id: string;
   urls: {
+    thumb: string;
     small: string;
     regular: string;
     full: string;

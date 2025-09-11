@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { ImageType } from "../types";
-import ItemPoolService from "../services/itemPoolService";
+import { createItemPoolService, ItemPoolServiceInterface } from "../services/itemPoolService";
 
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
@@ -12,13 +12,20 @@ import {
   deleteImageFromWord,
   updateImageInWord,
 } from "@/store/slices/vocabularySlice";
+import { useImageSearch } from "./useImageSearch";
 import { mockImagePoolApiCall } from "@/test-utils/MockImagePool";
 
-export type ImageAction = 
-  | { type: "ADD_IMAGE_TO_WORD"; payload: { wordId: string; } }
-  | { type: "DELETE_IMAGE_FROM_WORD"; payload: { wordId: string; imageId: string } }
+export type ImageAction =
+  | { type: "ADD_IMAGE_TO_WORD"; payload: { wordId: string } }
+  | {
+      type: "DELETE_IMAGE_FROM_WORD";
+      payload: { wordId: string; imageId: string };
+    }
   | { type: "NEXT_IMAGE_IN_WORD"; payload: { wordId: string; imageId: string } }
-  | { type: "PREV_IMAGE_IN_WORD"; payload: { wordId: string; imageId: string } };
+  | {
+      type: "PREV_IMAGE_IN_WORD";
+      payload: { wordId: string; imageId: string };
+    };
 
 export type VocabularyAction =
   | { type: "ADD_WORD"; payload: { word: string } }
@@ -30,48 +37,77 @@ function useVocabulary() {
   const dispatch = useDispatch<AppDispatch>();
   const words = useSelector((state: RootState) => state.vocabulary.words);
 
-  //const { searchSingle } = useImageSearch();
-  const [activePools, setActivePools] = useState<Record<string, ItemPoolService<ImageType>>>({});
+  const { searchSingle } = useImageSearch();
+  const [activePools, setActivePools] = useState<
+    Record<string, ItemPoolServiceInterface<ImageType>>
+  >({});
 
-  const getImagePool = useCallback((wordId: string) => {
-    if (activePools[wordId]) {
-      return activePools[wordId];
-    }
-    const fetchImages = async (tag: string, page: number, chunkSize: number) => {
-      const result = await mockImagePoolApiCall(tag,page,chunkSize);
-      return result.images.map((img) => ({
-        id: img.id,
-        urls: img.urls,
-        alt: img.alt_description || tag,
-      }));
-    };
+  const getImagePool = useCallback(
+    async (wordId: string, wordTag?: string) => {
+      if (activePools[wordId]) {
+        return activePools[wordId];
+      }
+ 
+      if (!wordTag) {
+        const word = words.find((word) => word.id === wordId);
+        wordTag = word?.word || wordId;
+      }
 
-    const pool = new ItemPoolService({
-      id: `${wordId}_pool`,
-      tag: wordId,
-      pool: [],
-      selectedIndexes: [],
-      options: { currentPage: 1, poolChunkSize: 5, selectedSize: 3 },
-      fetchItems: fetchImages
-    });
-    
-    setActivePools(prev => ({ ...prev, [wordId]: pool }));
-    return pool;
-  }, []);
+      const fetchImages = async (
+        tag: string,
+        page: number,
+        chunkSize: number
+      ) => {
+        const mock = true;
+        let result;
+        if (mock) {
+          result = await mockImagePoolApiCall(tag, page, chunkSize);
+        } else {
+          result = await searchSingle(tag, page, chunkSize);
+        }
+        return result.images.map((img) => ({
+          id: img.id,
+          urls: {
+            thumb: img.urls.thumb,
+            small: img.urls.small,
+            regular: img.urls.regular,
+            full: img.urls.full,
+          },
+          alt: img.alt_description || tag,
+        }));
+      };
+
+      const initialImages = await fetchImages(wordTag, 1, 5);
+  
+      const pool = createItemPoolService({
+        id: `${wordId}_pool`,
+        tag: wordTag,
+        pool: initialImages,
+        selectedIndexes: [0, 1, 2],
+        options: { currentPage: 2, poolChunkSize: 5, selectedSize: 3 },
+        fetchItems: fetchImages,
+      });
+
+      setActivePools((prev) => ({ ...prev, [wordId]: pool }));
+      return pool;
+    },
+    [activePools, searchSingle, words]
+  );
 
   const manageVocabulary = async (action: VocabularyAction) => {
     const { type } = action;
-    let imagePool: ItemPoolService<ImageType>;
+    let imagePool: ItemPoolServiceInterface<ImageType>;
     switch (type) {
       case "ADD_WORD":
         const newWord = {
           id: `word_${Date.now()}`,
           word: action.payload.word,
           definition: "",
-          images: [],
+          images: [] as ImageType[],
           createdAt: new Date().toISOString(),
         };
-        getImagePool(newWord.id);
+        imagePool = await getImagePool(newWord.id, newWord.word);
+        newWord.images = imagePool.getSelectedItems() as ImageType[];
         dispatch(addWord(newWord));
         break;
       case "UPDATE_WORD":
@@ -88,52 +124,67 @@ function useVocabulary() {
         break;
       case "DELETE_WORD":
         dispatch(deleteWord(action.payload.id));
+        setActivePools((prev) => {
+          const newPools = { ...prev };
+          delete newPools[action.payload.id];
+          return newPools;
+        });
         break;
-     
+
       case "ADD_IMAGE_TO_WORD":
-        imagePool = getImagePool(action.payload.wordId);
-        const image = await imagePool.manageItemPool({ type: "ADD" }) as ImageType;
+        imagePool = await getImagePool(action.payload.wordId);
+        const image = (await imagePool.manageItemPool({
+          type: "ADD",
+        })) as ImageType;
         dispatch(
-          addImageToWord(
-            { wordId: action.payload.wordId, image: image }
-          )
+          addImageToWord({ wordId: action.payload.wordId, image: image })
         );
         break;
 
       case "DELETE_IMAGE_FROM_WORD":
-        imagePool = getImagePool(action.payload.wordId);
-        imagePool.manageItemPool({ type: "DELETE", payload: { itemId: action.payload.imageId } });
+        imagePool = await getImagePool(action.payload.wordId);
+        imagePool.manageItemPool({
+          type: "DELETE",
+          payload: { itemId: action.payload.imageId },
+        });
         dispatch(
-          deleteImageFromWord(
-            { wordId: action.payload.wordId, imageId: action.payload.imageId }
-          )
+          deleteImageFromWord({
+            wordId: action.payload.wordId,
+            imageId: action.payload.imageId,
+          })
         );
         break;
 
       case "NEXT_IMAGE_IN_WORD":
-        imagePool = getImagePool(action.payload.wordId);
-        const nextImage = await imagePool.manageItemPool({ type: "NEXT", payload: { itemId: action.payload.imageId } }) as ImageType;
+        imagePool = await getImagePool(action.payload.wordId);
+        const nextImage = (await imagePool.manageItemPool({
+          type: "NEXT",
+          payload: { itemId: action.payload.imageId },
+        })) as ImageType;
         dispatch(
           updateImageInWord({
             wordId: action.payload.wordId,
             imageId: action.payload.imageId,
-            image: nextImage
+            image: nextImage,
           })
         );
         break;
 
       case "PREV_IMAGE_IN_WORD":
-        imagePool = getImagePool(action.payload.wordId);
-        const prevImage = await imagePool.manageItemPool({ type: "PREV", payload: { itemId: action.payload.imageId } }) as ImageType;
+        imagePool = await getImagePool(action.payload.wordId);
+        const prevImage = (await imagePool.manageItemPool({
+          type: "PREV",
+          payload: { itemId: action.payload.imageId },
+        })) as ImageType;
         dispatch(
           updateImageInWord({
             wordId: action.payload.wordId,
             imageId: action.payload.imageId,
-            image: prevImage
+            image: prevImage,
           })
         );
         break;
-      
+
       default:
         break;
     }
@@ -143,76 +194,3 @@ function useVocabulary() {
 }
 
 export default useVocabulary;
-
-/*
-deciding how to structure the vocabulary and the images
-to reduce complexity, the vocabulary is the main entity and the images are the child entities
-but! how to handle the images with the pool?
-at the moment, the pool is managed from the vocabulary component
-
-CURRENTLY:
-  vocabulary actions:
-    add word
-    update word
-    delete word
-    sync images to word
-
-  image pool actions:
-    add image
-    delete image
-    next image
-    previous image
-
-
-POSSIBLE SOLUTION:
-  vocabulary actions:
-    add word
-    update word
-    delete word
-    add image -> calls image pool actions add image
-    delete image -> calls image pool actions delete image
-    update image -> calls image pool actions next / previous image
-    fetch images -> passed from vocabulary component to image pool hook
-
-  image pool actions:
-    add image
-    delete image
-    next image
-    previous image
-
-Pros:
-  - images are managed from the vocabulary component
-  - reduced complexity
-  - vocabulary just needs to know about the images
-
-
-Cons:
-  - because the pool is general, the fetchImages function needs to be passed from the vocabulary component to the pool
-
-
-but what does the basic structure look like?
-
-words: {
-  id: string
-  word: string
-  definition: string
-  images: ImageType[]
-  createdAt: Date
-}[];
-
-ItemPoolType<T> {
-  id: string;
-  tag: string;
-  items: T[];
-  currentPage: number;
-  poolChunkSize: number;
-  selectedSize: number;
-}
-
-but words is an array and the pool is a single object
-so, we need to create a pool for each word. but how?
-I don't really want to add the pool to the word object because it's not a word property
-
-
-
-*/
