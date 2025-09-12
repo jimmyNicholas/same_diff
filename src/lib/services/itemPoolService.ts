@@ -11,7 +11,7 @@ interface ItemPoolOptions {
   selectedSize: number;
 }
 
-interface ItemPoolProps<T> {
+export interface ItemPoolProps<T> {
   id: string;
   tag: string;
   pool: T[];
@@ -21,11 +21,11 @@ interface ItemPoolProps<T> {
 }
 
 export interface ItemPoolServiceInterface<T> {
-    readonly id: string;
-    tag: string;
-    getSelectedItems(): T[];
-    manageItemPool(action: ItemPoolAction): Promise<T | undefined>;
-  }
+  readonly id: string;
+  tag: string;
+  getSelectedItems(): T[];
+  manageItemPool(action: ItemPoolAction): Promise<T | undefined>;
+}
 
 class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
   public readonly id: string;
@@ -33,13 +33,17 @@ class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
   private pool: T[];
   private selectedIndexes: number[];
   private options: ItemPoolOptions;
-  private fetchItems: (tag: string, page: number, chunkSize: number) => Promise<T[]>;
+  private fetchItems: (
+    tag: string,
+    page: number,
+    chunkSize: number
+  ) => Promise<T[]>;
 
   constructor(props: ItemPoolProps<T>) {
     this.id = props.id;
     this.tag = props.tag;
     this.pool = props.pool;
-    this.selectedIndexes = props.selectedIndexes;
+    this.selectedIndexes = props.selectedIndexes || [];
     this.options = {
       currentPage: props.options.currentPage || 1,
       poolChunkSize: props.options.poolChunkSize || 5,
@@ -48,16 +52,49 @@ class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
     this.fetchItems = props.fetchItems;
   }
 
-  private async _fillPool() {
-    const newItems = await this.fetchItems(
-      this.tag,
-      this.options.currentPage,
-      this.options.poolChunkSize
-    );
-    if (newItems.length > 0) {
-      this.options.currentPage++;
+  public async initialize(): Promise<void> {
+    try {
+      if (this.pool.length < this.options.selectedSize) {
+        await this._fillPool();
+      }
+
+      if (this.selectedIndexes.length === 0) {
+        const maxIndexes = Math.min(
+          this.options.selectedSize,
+          this.pool.length
+        );
+        this.selectedIndexes = Array.from({ length: maxIndexes }, (_, i) => i);
+      }
+
+      this.selectedIndexes = this.selectedIndexes.filter(
+        (index) => index < this.pool.length
+      );
+    } catch (error) {
+      console.warn("Failed to initialize item pool:", error);
+      const maxIndexes = Math.min(this.options.selectedSize, this.pool.length);
+      this.selectedIndexes = Array.from({ length: maxIndexes }, (_, i) => i);
     }
-    this.pool = [...this.pool, ...newItems];
+  }
+
+  private async _fillPool() {
+    try {
+      const newItems = await this.fetchItems(
+        this.tag,
+        this.options.currentPage,
+        this.options.poolChunkSize
+      );
+      if (!Array.isArray(newItems)) {
+        console.warn("fetchItems returned non-array:", newItems);
+        return;
+      }
+
+      if (newItems.length > 0) {
+        this.options.currentPage++;
+        this.pool = [...this.pool, ...newItems];
+      }
+    } catch (error) {
+      console.warn("Failed to fetch items:", error);
+    }
   }
 
   private async _navigateItemPool(currentIndex: number, modifier: number = 1) {
@@ -73,7 +110,7 @@ class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
       newIndex += modifier;
       iterations++;
 
-      if (newIndex <= min) {
+      if (newIndex < min) {
         newIndex = currentIndex;
         break;
       }
@@ -83,7 +120,7 @@ class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
         break;
       }
 
-      if (newIndex === min || !this.selectedIndexes.includes(newIndex)) {
+      if (!this.selectedIndexes.includes(newIndex)) {
         break;
       }
     }
@@ -159,14 +196,26 @@ class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
   }
 }
 
-export function createItemPoolService<T>(props: ItemPoolProps<T>): ItemPoolServiceInterface<T> {
-    const service = new ItemPoolService<T>(props);
-    return {
-        get id() { return service.id; },
-        get tag() { return service.tag; },
-        getSelectedItems: service.getSelectedItems.bind(service),
-        manageItemPool: service.manageItemPool.bind(service), 
-    };
+export async function createItemPoolService<T>(
+  props: ItemPoolProps<T>
+): Promise<ItemPoolServiceInterface<T>> {
+  const service = new ItemPoolService<T>(props);
+  try {
+    await service.initialize();
+  } catch (error) {
+    console.warn("Failed to create item pool service:", error);
+  }
+
+  return {
+    get id() {
+      return service.id;
+    },
+    get tag() {
+      return service.tag;
+    },
+    getSelectedItems: service.getSelectedItems.bind(service),
+    manageItemPool: service.manageItemPool.bind(service),
+  };
 }
 
 export default createItemPoolService;

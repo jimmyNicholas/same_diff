@@ -77,14 +77,14 @@ function useVocabulary() {
         }));
       };
 
-      const initialImages = await fetchImages(wordTag, 1, 5);
+      //const initialImages = await fetchImages(wordTag, 1, 5);
   
-      const pool = createItemPoolService({
+      const pool = await createItemPoolService({
         id: `${wordId}_pool`,
         tag: wordTag,
-        pool: initialImages,
+        pool: [],
         selectedIndexes: [0, 1, 2],
-        options: { currentPage: 2, poolChunkSize: 5, selectedSize: 3 },
+        options: { currentPage: 1, poolChunkSize: 5, selectedSize: 3 },
         fetchItems: fetchImages,
       });
 
