@@ -40,7 +40,7 @@ describe("ItemPoolService", () => {
       tag: "test-tag",
       pool: items.slice(0, 2), // Start with 2 items
       selectedIndexes: [],
-      options: { currentPage: 1, poolChunkSize: 5, selectedSize: 3 },
+      options: { currentPage: 1, poolChunkSize: 5, initialSize: 3 },
       fetchItems: mockFetchItems,
     });
   });
@@ -83,7 +83,7 @@ describe("ItemPoolService", () => {
         options: {
           currentPage: undefined as unknown as number,
           poolChunkSize: 5,
-          selectedSize: 3,
+          initialSize: 3,
         },
         fetchItems: mockFetch,
       });
@@ -102,7 +102,7 @@ describe("ItemPoolService", () => {
         options: {
           currentPage: 1,
           poolChunkSize: undefined as unknown as number,
-          selectedSize: 3,
+          initialSize: 3,
         },
         fetchItems: mockFetch,
       });
@@ -121,7 +121,7 @@ describe("ItemPoolService", () => {
         options: {
           currentPage: 1,
           poolChunkSize: 5,
-          selectedSize: undefined as unknown as number,
+          initialSize: undefined as unknown as number,
         },
         fetchItems: mockFetch,
       });
@@ -279,7 +279,7 @@ describe("ItemPoolService", () => {
         tag: "test",
         pool: [],
         selectedIndexes: [],
-        options: { currentPage: 1, poolChunkSize: 5, selectedSize: 3 },
+        options: { currentPage: 1, poolChunkSize: 5, initialSize: 3 },
         fetchItems: mockFetch,
       });
 
@@ -295,7 +295,7 @@ describe("ItemPoolService", () => {
         tag: "test",
         pool: items.slice(0, 10), // More than selectedSize
         selectedIndexes: [],
-        options: { currentPage: 1, poolChunkSize: 5, selectedSize: 3 },
+        options: { currentPage: 1, poolChunkSize: 5, initialSize: 3 },
         fetchItems: mockFetch,
       });
 
@@ -312,7 +312,7 @@ describe("ItemPoolService", () => {
         tag: "test",
         pool: items.slice(0, 10),
         selectedIndexes: customIndexes,
-        options: { currentPage: 1, poolChunkSize: 5, selectedSize: 3 },
+        options: { currentPage: 1, poolChunkSize: 5, initialSize: 3 },
         fetchItems: mockFetch,
       });
 
@@ -335,7 +335,7 @@ describe("ItemPoolService", () => {
         tag: 'test',
         pool: [],
         selectedIndexes: [],
-        options: { currentPage: 1, poolChunkSize: 5, selectedSize: 3 },
+        options: { currentPage: 1, poolChunkSize: 5, initialSize: 3 },
         fetchItems: failingFetch,
       });
 

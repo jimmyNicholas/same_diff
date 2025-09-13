@@ -8,7 +8,7 @@ export type ItemPoolAction =
 interface ItemPoolOptions {
   currentPage: number;
   poolChunkSize: number;
-  selectedSize: number;
+  initialSize: number;
 }
 
 export interface ItemPoolProps<T> {
@@ -47,20 +47,20 @@ class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
     this.options = {
       currentPage: props.options.currentPage || 1,
       poolChunkSize: props.options.poolChunkSize || 5,
-      selectedSize: props.options.selectedSize || 3,
+      initialSize: props.options.initialSize || 3,
     };
     this.fetchItems = props.fetchItems;
   }
 
   public async initialize(): Promise<void> {
     try {
-      if (this.pool.length < this.options.selectedSize) {
+      if (this.pool.length < this.options.initialSize) {
         await this._fillPool();
       }
 
       if (this.selectedIndexes.length === 0) {
         const maxIndexes = Math.min(
-          this.options.selectedSize,
+          this.options.initialSize,
           this.pool.length
         );
         this.selectedIndexes = Array.from({ length: maxIndexes }, (_, i) => i);
@@ -71,7 +71,7 @@ class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
       );
     } catch (error) {
       console.warn("Failed to initialize item pool:", error);
-      const maxIndexes = Math.min(this.options.selectedSize, this.pool.length);
+      const maxIndexes = Math.min(this.options.initialSize, this.pool.length);
       this.selectedIndexes = Array.from({ length: maxIndexes }, (_, i) => i);
     }
   }

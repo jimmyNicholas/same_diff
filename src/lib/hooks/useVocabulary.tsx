@@ -48,9 +48,12 @@ function useVocabulary() {
         return activePools[wordId];
       }
  
+      let wordImages: ImageType[] = [];
+
       if (!wordTag) {
         const word = words.find((word) => word.id === wordId);
         wordTag = word?.word || wordId;
+        wordImages = word?.images || [];
       }
 
       const fetchImages = async (
@@ -58,7 +61,7 @@ function useVocabulary() {
         page: number,
         chunkSize: number
       ) => {
-        const mock = true;
+        const mock = false;
         let result;
         if (mock) {
           result = await mockImagePoolApiCall(tag, page, chunkSize);
@@ -76,15 +79,13 @@ function useVocabulary() {
           alt: img.alt_description || tag,
         }));
       };
-
-      //const initialImages = await fetchImages(wordTag, 1, 5);
   
       const pool = await createItemPoolService({
         id: `${wordId}_pool`,
         tag: wordTag,
-        pool: [],
-        selectedIndexes: [0, 1, 2],
-        options: { currentPage: 1, poolChunkSize: 5, selectedSize: 3 },
+        pool: wordImages || [],
+        selectedIndexes: [],
+        options: { currentPage: 1, poolChunkSize: 5, initialSize: wordImages.length || 3 },
         fetchItems: fetchImages,
       });
 
