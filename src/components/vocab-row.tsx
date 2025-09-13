@@ -19,7 +19,10 @@ const VocabRowContainer = ({
     if (inputValue.trim() === "") {
       return;
     }
-    manageVocabulary({ type: "ADD_WORD", payload: { word: inputValue } });
+    const words = inputValue.split(",");
+    words.forEach((word) => {
+      manageVocabulary({ type: "ADD_WORD", payload: { word: word.trim() } });
+    });
     setInputValue("");
   };
 
@@ -29,13 +32,18 @@ const VocabRowContainer = ({
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          className="w-44 flex-shrink-0"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleAddWord();
+            }
+          }}
+          className="w-[80%] flex-shrink-0"
         />
         <button
           className="bg-accent text-accent-foreground px-4 py-2 rounded-md"
           onClick={handleAddWord}
         >
-          Add New Word
+          Add New Word or Phrase
         </button>
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -77,7 +85,6 @@ const VocabRow = ({ vocabulary, manageVocabulary }: VocabRowProps) => {
   return (
     <div className="flex flex-col gap-2 border-foreground border-2 rounded-md p-2 items-center">
       <div className="flex flex-row gap-2 items-center">
-        <label htmlFor="vocab-row-input">{'Word: '}</label>
         <Input
           value={inputValue}
           onBlur={onHandleUpdateWord}

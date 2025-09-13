@@ -45,6 +45,7 @@ function useVocabulary() {
   const getImagePool = useCallback(
     async (wordId: string, wordTag?: string) => {
       if (activePools[wordId]) {
+        console.log("activePools[wordId]", activePools[wordId]);
         return activePools[wordId];
       }
  
@@ -101,7 +102,7 @@ function useVocabulary() {
     switch (type) {
       case "ADD_WORD":
         const newWord = {
-          id: `word_${Date.now()}`,
+          id: `${action.payload.word}_${Date.now()}`,
           word: action.payload.word,
           definition: "",
           images: [] as ImageType[],
@@ -114,6 +115,11 @@ function useVocabulary() {
       case "UPDATE_WORD":
         const word = words.find((word) => word.id === action.payload.id);
         if (word) {
+          imagePool = await getImagePool(word.id, word.word);
+          imagePool.manageItemPool({
+            type: "UPDATE_TAG",
+            payload: { tag: action.payload.word },
+          });
           dispatch(
             updateWord({
               ...word,

@@ -25,6 +25,7 @@ export interface ItemPoolServiceInterface<T> {
   tag: string;
   getSelectedItems(): T[];
   manageItemPool(action: ItemPoolAction): Promise<T | undefined>;
+  getAllItems(): T[];
 }
 
 class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
@@ -144,6 +145,10 @@ class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
     return this.selectedIndexes.map((index) => this.pool[index]);
   }
 
+  getAllItems() {
+    return this.pool;
+  }
+
   public async manageItemPool(action: ItemPoolAction) {
     const { type } = action;
     let index = 0;
@@ -188,6 +193,10 @@ class ItemPoolService<T> implements ItemPoolServiceInterface<T> {
 
       case "UPDATE_TAG":
         this.tag = action.payload.tag;
+        this.pool = this.getSelectedItems() as T[];
+        this.selectedIndexes = this.selectedIndexes.map((index) => index);
+        this.options.currentPage = 1;
+        await this._fillPool();
         break;
 
       default:
@@ -213,6 +222,7 @@ export async function createItemPoolService<T>(
     get tag() {
       return service.tag;
     },
+    getAllItems: service.getAllItems.bind(service),
     getSelectedItems: service.getSelectedItems.bind(service),
     manageItemPool: service.manageItemPool.bind(service),
   };
