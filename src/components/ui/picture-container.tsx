@@ -1,18 +1,25 @@
 import Picture from "./picture";
 import { ImageType } from "@/lib/types";
-import { ItemPoolAction } from "@/lib/hooks/useItemPool";
+
+export type ManageImageType = "DELETE"| "NEXT" | "PREV";
 
 interface PictureContainerProps {
   images: ImageType[];
-  manageItemPool: (
-    action: ItemPoolAction,
+  manageImage: (
+    action: ManageImageType,
+    itemId: string,
   ) => void;
 }
 
 const PictureContainer = ({
   images,
-  manageItemPool,
+  manageImage,
 }: PictureContainerProps) => {
+
+  const onImageClick = (type: string, imageId: string) => {
+    manageImage(type as ManageImageType, imageId);
+  };
+
   return (
     <div
       data-testid="picture-container"
@@ -22,7 +29,7 @@ const PictureContainer = ({
         <Picture
           key={index}
           image={image}
-          onImageClick={manageItemPool}
+          onImageClick={onImageClick}
         />
       ))}
     </div>

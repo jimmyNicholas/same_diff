@@ -3,7 +3,8 @@ import { setProjectAnnotations } from '@storybook/nextjs-vite';
 import * as projectAnnotations from './preview';
 import { afterEach, beforeEach, expect, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom';
+//import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 
 // This is an important step to apply the right configuration when testing your stories.
 // More info at: https://storybook.js.org/docs/api/portable-stories/portable-stories-vitest#setprojectannotations

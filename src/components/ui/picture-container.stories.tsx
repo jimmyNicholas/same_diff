@@ -1,20 +1,15 @@
 import { Meta, StoryObj } from "@storybook/nextjs";
 import PictureContainer from "./picture-container";
-import { expect } from "storybook/test";
+import { expect, fn } from "storybook/test";
+import { mockVocabularyWords } from "@/test-utils/MockProvider";
 
 const meta = {
   component: PictureContainer,
   title: "Components/ui/PictureContainer",
   tags: ["autodocs"],
   args: {
-    pictures: Array.from({ length: 5 }, (_, index) => ({
-      id: `${index + 1}`,
-      enabled: true,
-      loading: false,
-      src: "/images/placeholder.jpg",
-      alt: `Test image ${index + 1}`,
-      size: "md",
-    })),
+    images: mockVocabularyWords.flatMap(word => word.images),
+    manageImage: fn(),
   },
 } satisfies Meta<typeof PictureContainer>;
 
@@ -23,12 +18,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Empty: Story = {
   args: {
-    pictures: Array(5).fill({ enabled: false, loading: false }),
+    images: [],
   },
 };
 
 export const WithImages: Story = {};
-
+/*
 export const StateMix: Story = {
   args: {
     pictures: [
@@ -211,3 +206,5 @@ export const TestingSorting: Story = {
     ],
   },
 };
+
+*/

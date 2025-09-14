@@ -2,11 +2,11 @@
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Loader2, X } from "lucide-react";
 import { ImageType } from "@/lib/types";
-import { ItemPoolAction } from "@/lib/hooks/useItemPool";
+import { ManageImageType } from "./picture-container";
 
 export interface PicturePropsType {
   image: ImageType;
-  onImageClick: (action: ItemPoolAction) => void;
+  onImageClick: (type: ManageImageType, imageId: string) => void;
 }
 
 const Picture = ({ image, onImageClick }: PicturePropsType) => {
@@ -25,7 +25,7 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
   }
 
   return (
-    <div key={image.id}>
+    <div key={image.id} data-testid={image.id}>
       <div
         className="relative rounded-md"
         style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
@@ -46,9 +46,10 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
         <div className="absolute top-0 right-0 rounded-full m-1">
           <button
             aria-label="Close this image"
+            data-testid="close-image-button"
             className="bg-destructive/70 rounded-full"
             onClick={() =>
-              onImageClick({ type: "DELETE", payload: { itemId: image.id } })
+              onImageClick("DELETE", image.id)
             }
           >
             <X
@@ -65,9 +66,10 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
         <div className="absolute top-[45%] left-0 rounded-full ml-1">
           <button
             aria-label="Previous image"
+            data-testid="previous-image-button"
             className="bg-secondary/70 rounded-full"
             onClick={() =>
-              onImageClick({ type: "PREV", payload: { itemId: image.id } })
+              onImageClick("PREV", image.id)
             }
           >
             <ChevronLeft
@@ -84,9 +86,10 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
         <div className="absolute top-[45%] right-0 rounded-full mr-1">
           <button
             aria-label="Next image"
+            data-testid="next-image-button"
             className="bg-secondary/70 rounded-full"
             onClick={() =>
-              onImageClick({ type: "NEXT", payload: { itemId: image.id } })
+              onImageClick("NEXT", image.id)
             }
           >
             <ChevronRight
