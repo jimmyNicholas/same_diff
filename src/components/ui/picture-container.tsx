@@ -1,10 +1,12 @@
 import Picture from "./picture";
 import { ImageType } from "@/lib/types";
 
+export type ManageImageType = "DELETE"| "NEXT" | "PREV";
+
 interface PictureContainerProps {
   images: ImageType[];
   manageImage: (
-    action: "DELETE"| "NEXT" | "PREV",
+    action: ManageImageType,
     itemId: string,
   ) => void;
 }
@@ -15,7 +17,7 @@ const PictureContainer = ({
 }: PictureContainerProps) => {
 
   const onImageClick = (type: string, imageId: string) => {
-    manageImage(type as "DELETE"| "NEXT" | "PREV", imageId);
+    manageImage(type as ManageImageType, imageId);
   };
 
   return (

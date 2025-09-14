@@ -62,7 +62,7 @@ function useVocabulary() {
         page: number,
         chunkSize: number
       ) => {
-        const mock = false;
+        const mock = true;
         let result;
         if (mock) {
           result = await mockImagePoolApiCall(tag, page, chunkSize);

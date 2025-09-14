@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import AdminActivities from "./page";
-import { MockVocabularyProvider, mockVocabularyWords } from "@/test-utils/MockVocabularyProvider";
+import { MockVocabularyProvider, mockVocabularyWords } from "@/test-utils/MockProvider";
 
 const meta = {
   component: AdminActivities,

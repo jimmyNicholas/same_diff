@@ -1,12 +1,12 @@
 import type { Decorator, Preview } from '@storybook/nextjs'
 import '../src/app/globals.css'
-import { VocabularyProvider } from '../src/lib/contexts/VocabularyContext';
+import { MockVocabularyProvider } from '../src/test-utils/MockProvider';
 import React from 'react';
 
 const withVocabularyProvider: Decorator = (Story) => (
-  <VocabularyProvider>
+  <MockVocabularyProvider>
     <Story />
-  </VocabularyProvider>
+  </MockVocabularyProvider>
 );
 
 const preview: Preview = {
