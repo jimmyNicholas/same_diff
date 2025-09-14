@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, Loader2, X } from "lucide-react";
 import { ImageType } from "@/lib/types";
 import { ManageImageType } from "./picture-container";
+import { useState } from "react";
 
 export interface PicturePropsType {
   image: ImageType;
@@ -10,6 +11,8 @@ export interface PicturePropsType {
 }
 
 const Picture = ({ image, onImageClick }: PicturePropsType) => {
+  const [imageLoading, setImageLoading] = useState(false);
+
   // default size
   const pictureWidth = 100;
   const pictureHeight = 100;
@@ -27,9 +30,14 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
   return (
     <div key={image.id} data-testid={image.id}>
       <div
-        className="relative rounded-md"
+        className="relative rounded-md group"
         style={{ width: `${pictureWidth}px`, height: `${pictureHeight}px` }}
       >
+        {(imageLoading) && (
+          <div className="absolute inset-0 bg-secondary/70 rounded-md flex items-center justify-center z-10">
+            <Loader2 className="w-8 h-8 text-white animate-spin" />
+          </div>
+        )}
         <Image
           src={image.urls.thumb}
           alt={image.alt}
@@ -40,17 +48,21 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
             width: `${pictureWidth}px`,
             height: `${pictureHeight}px`,
           }}
+          onLoad={() => {
+            setImageLoading(false);
+          }}
+          onError={() => {
+            setImageLoading(false);
+          }}
         />
 
         {/* Close Button */}
-        <div className="absolute top-0 right-0 rounded-full m-1">
+        <div className="absolute top-0 right-0 rounded-full m-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             aria-label="Close this image"
             data-testid="close-image-button"
             className="bg-destructive/70 rounded-full"
-            onClick={() =>
-              onImageClick("DELETE", image.id)
-            }
+            onClick={() => onImageClick("DELETE", image.id)}
           >
             <X
               style={{
@@ -63,14 +75,12 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
         </div>
 
         {/* Previous Button */}
-        <div className="absolute top-[45%] left-0 rounded-full ml-1">
+        <div className="absolute top-[45%] left-0 rounded-full ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             aria-label="Previous image"
             data-testid="previous-image-button"
             className="bg-secondary/70 rounded-full"
-            onClick={() =>
-              onImageClick("PREV", image.id)
-            }
+            onClick={() => onImageClick("PREV", image.id)}
           >
             <ChevronLeft
               style={{
@@ -83,14 +93,15 @@ const Picture = ({ image, onImageClick }: PicturePropsType) => {
         </div>
 
         {/* Next Button */}
-        <div className="absolute top-[45%] right-0 rounded-full mr-1">
+        <div className="absolute top-[45%] right-0 rounded-full mr-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             aria-label="Next image"
             data-testid="next-image-button"
             className="bg-secondary/70 rounded-full"
-            onClick={() =>
-              onImageClick("NEXT", image.id)
-            }
+            onClick={() => {
+              setImageLoading(true);
+              onImageClick("NEXT", image.id);
+            }}
           >
             <ChevronRight
               style={{

@@ -45,7 +45,6 @@ function useVocabulary() {
   const getImagePool = useCallback(
     async (wordId: string, wordTag?: string) => {
       if (activePools[wordId]) {
-        console.log("activePools[wordId]", activePools[wordId]);
         return activePools[wordId];
       }
  
